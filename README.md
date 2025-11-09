@@ -11,6 +11,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | AtsuMoe   | `atsumoe`   | https://atsumoe.com       | Active |
 | LikeManga | `likemanga` | https://likemanga.io      |Unstable|
 | ManhuaUS  | `manhuaus`  | https://manhuaus.com      | Active |
+| MangaRead | `mangaread` | https://mangaread.org     | Active |
 | Mgeko     | `mgeko`     | https://mgeko.cc          | Active |
 | NovelCool | `novelcool` | https://www.novelcool.com | Active |
 
