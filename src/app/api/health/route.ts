@@ -5,6 +5,8 @@ import {
   SourceHealthResult,
 } from "@/lib/utils/source-health";
 
+export const runtime = "edge";
+
 // Cache health results for 5 minutes to avoid hammering sources
 let cachedResults: {
   data: Record<string, SourceHealthResult>;
