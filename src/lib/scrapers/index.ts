@@ -6,10 +6,11 @@ import { ManhuausScraper } from "./manhuaus";
 import { MangaReadScraper } from "./mangaread";
 import { MgekoScraper } from "./mgeko";
 import { NovelCoolScraper } from "./novelcool";
-import { AsuraScanScraper, asuraScanScraper } from "./asurascan";
+import { AsuraScanScraper } from "./asurascan";
 import { WeebCentralScraper } from "./weebcentral";
-import { FlameComicsScraper, flameComicsScraper } from "./flamecomics";
-import { BatoScraper, batoScraper } from "./bato";
+import { FlameComicsScraper } from "./flamecomics";
+import { BatoScraper } from "./bato";
+import { MangaloomScraper } from "./mangaloom";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -20,10 +21,11 @@ const scrapers: BaseScraper[] = [
   new MangaReadScraper(),
   new MgekoScraper(),
   new NovelCoolScraper(),
-  asuraScanScraper,
+  new AsuraScanScraper(),
   new WeebCentralScraper(),
-  flameComicsScraper,
-  batoScraper,
+  new FlameComicsScraper(),
+  new BatoScraper(),
+  new MangaloomScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -66,10 +68,8 @@ export {
   MgekoScraper,
   NovelCoolScraper,
   AsuraScanScraper,
-  asuraScanScraper,
   WeebCentralScraper,
   FlameComicsScraper,
-  flameComicsScraper,
   BatoScraper,
-  batoScraper,
+  MangaloomScraper,
 };
