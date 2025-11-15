@@ -20,6 +20,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Mangaloom   | `mangaloom`   | https://mangaloom.com     | Active |
 | MangaYY     | `mangayy`     | https://mangayy.org       | Active |
 | TopManhua   | `topmanhua`   | https://manhuatop.org     | Active |
+| LagoonScans | `lagoonscans` | https://lagoonscans.com   | Active |
 
 ## Quick Start
 
