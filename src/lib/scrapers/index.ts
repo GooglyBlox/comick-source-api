@@ -12,6 +12,7 @@ import { FlameComicsScraper } from "./flamecomics";
 import { BatoScraper } from "./bato";
 import { MangaloomScraper } from "./mangaloom";
 import { MangayyScraper } from "./mangayy";
+import { TopManhuaScraper } from "./topmanhua";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -28,6 +29,7 @@ const scrapers: BaseScraper[] = [
   new BatoScraper(),
   new MangaloomScraper(),
   new MangayyScraper(),
+  new TopManhuaScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -75,4 +77,5 @@ export {
   BatoScraper,
   MangaloomScraper,
   MangayyScraper,
+  TopManhuaScraper,
 };

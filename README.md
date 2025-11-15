@@ -19,6 +19,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Bato        | `bato`        | https://bato.to           | Active |
 | Mangaloom   | `mangaloom`   | https://mangaloom.com     | Active |
 | MangaYY     | `mangayy`     | https://mangayy.org       | Active |
+| TopManhua   | `topmanhua`   | https://manhuatop.org     | Active |
 
 ## Quick Start
 
