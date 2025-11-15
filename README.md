@@ -13,7 +13,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | LikeManga   | `likemanga`   | https://likemanga.io      | Active |
 | ManhuaUS    | `manhuaus`    | https://manhuaus.com      | Active |
 | MangaRead   | `mangaread`   | https://mangaread.org     | Active |
-| Mgeko       | `mgeko`       | https://mgeko.cc          | Active |
+| Mgeko       | `mgeko`       | https://mgeko.cc          |Unstable|
 | NovelCool   | `novelcool`   | https://www.novelcool.com | Active |
 | FlameComics | `flamecomics` | https://flamecomics.xyz   | Active |
 | Bato        | `bato`        | https://bato.to           | Active |
