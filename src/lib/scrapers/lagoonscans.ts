@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class LagoonScansScraper extends BaseScraper {
   getName(): string {
@@ -14,6 +14,10 @@ export class LagoonScansScraper extends BaseScraper {
 
   canHandle(url: string): boolean {
     return url.includes("lagoonscans.com");
+  }
+
+  getType(): SourceType {
+    return "scanlator";
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {

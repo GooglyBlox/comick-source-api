@@ -19,10 +19,13 @@ export interface SearchResult {
   followers?: string;
 }
 
+export type SourceType = "scanlator" | "aggregator";
+
 export interface SourceInfo {
   id: string;
   name: string;
   baseUrl: string;
   description?: string;
   clientOnly?: boolean;
+  type: SourceType;
 }

@@ -61,6 +61,7 @@ export function getAllSourceInfo(): SourceInfo[] {
     baseUrl: scraper.getBaseUrl(),
     description: scraper.getDescription(),
     clientOnly: scraper.isClientOnly(),
+    type: scraper.getType(),
   }));
 }
 

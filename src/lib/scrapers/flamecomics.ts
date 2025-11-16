@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class FlameComicsScraper extends BaseScraper {
   private readonly BASE_URL = "https://flamecomics.xyz";
@@ -18,6 +18,10 @@ export class FlameComicsScraper extends BaseScraper {
 
   canHandle(url: string): boolean {
     return url.includes("flamecomics.xyz");
+  }
+
+  getType(): SourceType {
+    return "scanlator";
   }
 
   /**

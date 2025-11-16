@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class AsuraScanScraper extends BaseScraper {
   private readonly BASE_URL = "https://asuracomic.net";
@@ -50,6 +50,10 @@ export class AsuraScanScraper extends BaseScraper {
 
   isClientOnly(): boolean {
     return true;
+  }
+
+  getType(): SourceType {
+    return "scanlator";
   }
 
   async search(query: string): Promise<SearchResult[]> {

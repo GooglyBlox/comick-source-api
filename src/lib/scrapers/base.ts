@@ -1,4 +1,4 @@
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 interface ScraperConfig {
   retryAttempts: number;
@@ -81,5 +81,9 @@ export abstract class BaseScraper {
 
   isClientOnly(): boolean {
     return false;
+  }
+
+  getType(): SourceType {
+    return "aggregator";
   }
 }
