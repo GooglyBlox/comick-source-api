@@ -21,6 +21,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | MangaYY     | `mangayy`     | https://mangayy.org       | Active |
 | TopManhua   | `topmanhua`   | https://manhuatop.org     | Active |
 | LagoonScans | `lagoonscans` | https://lagoonscans.com   | Active |
+| Stonescape  | `stonescape`  | https://stonescape.xyz    | Active |
 
 ## Quick Start
 

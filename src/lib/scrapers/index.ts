@@ -14,6 +14,7 @@ import { MangaloomScraper } from "./mangaloom";
 import { MangayyScraper } from "./mangayy";
 import { TopManhuaScraper } from "./topmanhua";
 import { LagoonScansScraper } from "./lagoonscans";
+import { StonescapeScraper } from "./stonescape";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -32,6 +33,7 @@ const scrapers: BaseScraper[] = [
   new MangayyScraper(),
   new TopManhuaScraper(),
   new LagoonScansScraper(),
+  new StonescapeScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -82,4 +84,5 @@ export {
   MangayyScraper,
   TopManhuaScraper,
   LagoonScansScraper,
+  StonescapeScraper,
 };
