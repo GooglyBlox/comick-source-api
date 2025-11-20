@@ -4,25 +4,26 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 
 > **Looking for the userscript?** Check out the [Comick Source Linker on GreasyFork](https://greasyfork.org/en/scripts/555280-comick-source-linker)
 
-| Source      | ID            | Base URL                  | Status |
-| ----------- | ------------- | ------------------------- | ------ |
-| MangaPark   | `mangapark`   | https://mangapark.io      | Active |
-| AsuraScan   | `asurascan`   | https://asuracomic.net    | Active |
-| AtsuMoe     | `atsumoe`     | https://atsumoe.com       | Active |
-| WeebCentral | `weebcentral` | https://weebcentral.com   | Active | 
-| LikeManga   | `likemanga`   | https://likemanga.io      | Active |
-| ManhuaUS    | `manhuaus`    | https://manhuaus.com      | Active |
-| MangaRead   | `mangaread`   | https://mangaread.org     | Active |
-| Mgeko       | `mgeko`       | https://mgeko.cc          | Active |
-| NovelCool   | `novelcool`   | https://www.novelcool.com | Active |
-| FlameComics | `flamecomics` | https://flamecomics.xyz   | Active |
-| Bato        | `bato`        | https://bato.to           | Active |
-| Mangaloom   | `mangaloom`   | https://mangaloom.com     | Active |
-| MangaYY     | `mangayy`     | https://mangayy.org       | Active |
-| TopManhua   | `topmanhua`   | https://manhuatop.org     | Active |
-| LagoonScans | `lagoonscans` | https://lagoonscans.com   | Active |
-| Stonescape  | `stonescape`  | https://stonescape.xyz    | Active |
-| Rizz Fables | `rizzfables`  | https://rizzfables.com    | Active |
+| Source       | ID             | Base URL                  | Status |
+| -----------  | -------------  | ------------------------- | ------ |
+| MangaPark    | `mangapark`    | https://mangapark.io      | Active |
+| AsuraScan    | `asurascan`    | https://asuracomic.net    | Active |
+| AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
+| WeebCentral  | `weebcentral`  | https://weebcentral.com   | Active | 
+| LikeManga    | `likemanga`    | https://likemanga.io      | Active |
+| ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Active |
+| MangaRead    | `mangaread`    | https://mangaread.org     | Active |
+| Mgeko        | `mgeko`        | https://mgeko.cc          | Active |
+| NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
+| FlameComics  | `flamecomics`  | https://flamecomics.xyz   | Active |
+| Bato         | `bato`         | https://bato.to           | Active |
+| Mangaloom    | `mangaloom`    | https://mangaloom.com     | Active |
+| MangaYY      | `mangayy`      | https://mangayy.org       | Active |
+| TopManhua    | `topmanhua`    | https://manhuatop.org     | Active |
+| LagoonScans  | `lagoonscans`  | https://lagoonscans.com   | Active |
+| Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
+| Rizz Fables  | `rizzfables`   | https://rizzfables.com    | Active |
+| Falcon Scans | `falcon-scans` | https://falconscans.com   | Active |
 
 ## Quick Start
 
