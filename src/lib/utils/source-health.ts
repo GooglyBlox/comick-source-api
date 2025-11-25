@@ -177,7 +177,7 @@ export async function checkAllSourcesHealth(
 
   await Promise.all(
     scrapers.map(async (scraper) => {
-      const sourceName = scraper.getName().toLowerCase();
+      const sourceName = scraper.getName().toLowerCase().replace(/\s+/g, "-");
       const health = await checkSourceHealth(scraper);
       results.set(sourceName, health);
     }),
