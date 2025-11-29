@@ -18,6 +18,7 @@ import { StonescapeScraper } from "./stonescape";
 import { RizzFablesScraper } from "./rizzfables";
 import { FalconscansScraper } from "./falconscans";
 import { ComixScraper } from "./comix";
+import { RavenScansScraper } from "./ravenscans";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -40,6 +41,7 @@ const scrapers: BaseScraper[] = [
   new RizzFablesScraper(),
   new FalconscansScraper(),
   new ComixScraper(),
+  new RavenScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -94,4 +96,5 @@ export {
   RizzFablesScraper,
   FalconscansScraper,
   ComixScraper,
+  RavenScansScraper,
 };
