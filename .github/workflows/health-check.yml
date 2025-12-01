@@ -1,0 +1,41 @@
+name: Source Health Check
+
+on:
+  schedule:
+    # Run twice daily at 6 AM and 6 PM UTC
+    - cron: "0 6,18 * * *"
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run health check and update README
+        id: health-check
+        env:
+          API_URL: https://comick-source-api.notaspider.dev
+        run: npx tsx scripts/update-readme-health.ts
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git diff --staged --quiet || git commit -m "chore: update source health status [skip ci]"
+          git push
+

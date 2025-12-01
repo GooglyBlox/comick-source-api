@@ -7,23 +7,23 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
 | MangaPark    | `mangapark`    | https://mangapark.io      | Active |
-| AsuraScan    | `asurascan`    | https://asuracomic.net    | Active |
+| AsuraScan | `asurascan` | https://asuracomic.net | Unstable |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
-| WeebCentral  | `weebcentral`  | https://weebcentral.com   | Active | 
-| LikeManga    | `likemanga`    | https://likemanga.io      | Active |
+| WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
+| LikeManga | `likemanga` | https://likemanga.io | Unstable |
 | ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Active |
 | MangaRead    | `mangaread`    | https://mangaread.org     | Active |
 | Mgeko        | `mgeko`        | https://mgeko.cc          | Active |
 | NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
-| FlameComics  | `flamecomics`  | https://flamecomics.xyz   | Active |
+| FlameComics | `flamecomics` | https://flamecomics.xyz | Unstable |
 | Bato         | `bato`         | https://bato.to           | Active |
 | Mangaloom    | `mangaloom`    | https://mangaloom.com     | Active |
-| MangaYY      | `mangayy`      | https://mangayy.org       | Active |
-| TopManhua    | `topmanhua`    | https://manhuatop.org     | Active |
+| MangaYY | `mangayy` | https://mangayy.org | Unstable |
+| TopManhua | `topmanhua` | https://manhuatop.org | Unstable |
 | LagoonScans  | `lagoonscans`  | https://lagoonscans.com   | Active |
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
-| Rizz Fables  | `rizzfables`   | https://rizzfables.com    | Active |
-| Falcon Scans | `falcon-scans` | https://falconscans.com   | Active |
+| Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
+| Falcon Scans | `falcon-scans` | https://falconscans.com | Unstable |
 | Raven Scans  | `raven-scans`  | https://ravenscans.com    | Active |
 | Comix        | `comix`        | https://comix.to          | Active |
 
