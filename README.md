@@ -6,14 +6,14 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
-| MangaPark | `mangapark` | https://mangapark.io | Unstable |
-| AsuraScan | `asurascan` | https://asuracomic.net | Unstable |
+| MangaPark | `mangapark` | https://mangapark.io | Active |
+| AsuraScan | `asurascan` | https://asuracomic.net | Active |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
 | WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
 | LikeManga | `likemanga` | https://likemanga.io | Active |
 | ManhuaUS | `manhuaus` | https://manhuaus.com | Active |
 | MangaRead    | `mangaread`    | https://mangaread.org     | Active |
-| Mgeko | `mgeko` | https://mgeko.cc | Unstable |
+| Mgeko | `mgeko` | https://mgeko.cc | Active |
 | NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
 | FlameComics | `flamecomics` | https://flamecomics.xyz | Active |
 | Bato | `bato` | https://bato.to | Active |
@@ -24,7 +24,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
 | Falcon Scans | `falcon-scans` | https://falconscans.com | Active |
-| Raven Scans | `raven-scans` | https://ravenscans.com | Unstable |
+| Raven Scans | `raven-scans` | https://ravenscans.com | Active |
 | Comix        | `comix`        | https://comix.to          | Active |
 
 ## Quick Start
