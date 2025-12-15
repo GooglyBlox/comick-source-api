@@ -6,7 +6,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
-| MangaPark | `mangapark` | https://mangapark.io | Unstable |
+| MangaPark | `mangapark` | https://mangapark.io | Active |
 | AsuraScan | `asurascan` | https://asuracomic.net | Active |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
 | WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
@@ -16,7 +16,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Mgeko | `mgeko` | https://mgeko.cc | Active |
 | NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
 | FlameComics | `flamecomics` | https://flamecomics.xyz | Active |
-| Bato | `bato` | https://bato.to | Active |
+| Bato | `bato` | https://bato.to | Unstable |
 | Mangaloom | `mangaloom` | https://mangaloom.com | Active |
 | MangaYY | `mangayy` | https://mangayy.org | Active |
 | TopManhua | `topmanhua` | https://manhuatop.org | Active |
