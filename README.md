@@ -24,7 +24,7 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
 | Falcon Scans | `falcon-scans` | https://falconscans.com | Unstable |
-| Raven Scans | `raven-scans` | https://ravenscans.com | Active |
+| Raven Scans | `raven-scans` | https://ravenscans.com | Unstable |
 | Comix        | `comix`        | https://comix.to          | Active |
 
 ## Quick Start
