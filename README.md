@@ -26,6 +26,8 @@ A RESTful API built with Next.js 14 for scraping manga and comic metadata from m
 | Falcon Scans | `falcon-scans` | https://falconscans.com | Unstable |
 | Raven Scans | `raven-scans` | https://ravenscans.com | Active |
 | Comix        | `comix`        | https://comix.to          | Active |
+| Mangataro    | `mangataro`    | https://mangataro.org     | Active |
+| KaliScan     | `kaliscan`     | https://kaliscan.com      | Active |
 
 ## Quick Start
 
