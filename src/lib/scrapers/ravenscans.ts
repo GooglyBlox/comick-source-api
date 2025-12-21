@@ -15,7 +15,7 @@ export class RavenScansScraper extends BaseScraper {
   }
 
   getType(): SourceType {
-    return 'scanlator';
+    return 'aggregator';
   }
 
   canHandle(url: string): boolean {
