@@ -21,6 +21,7 @@ import { ComixScraper } from "./comix";
 import { RavenScansScraper } from "./ravenscans";
 import { MangataroScraper } from "./mangataro";
 import { KaliScanScraper } from "./kaliscan";
+import { MangagoScraper } from "./mangago";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -46,6 +47,7 @@ const scrapers: BaseScraper[] = [
   new RavenScansScraper(),
   new MangataroScraper(),
   new KaliScanScraper(),
+  new MangagoScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -103,4 +105,5 @@ export {
   RavenScansScraper,
   MangataroScraper,
   KaliScanScraper,
+  MangagoScraper,
 };
