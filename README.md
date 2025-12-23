@@ -7,7 +7,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
 | MangaPark | `mangapark` | https://mangapark.io | Active |
-| AsuraScan | `asurascan` | https://asuracomic.net | Active |
+| AsuraScan | `asurascan` | https://asuracomic.net | Unstable |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
 | WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
 | LikeManga | `likemanga` | https://likemanga.io | Active |
@@ -24,7 +24,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
 | Falcon Scans | `falcon-scans` | https://falconscans.com | Unstable |
-| Raven Scans | `raven-scans` | https://ravenscans.com | Active |
+| Raven Scans | `raven-scans` | https://ravenscans.com | Unstable |
 | Comix        | `comix`        | https://comix.to          | Active |
 | Mangataro    | `mangataro`    | https://mangataro.org     | Active |
 | KaliScan     | `kaliscan`     | https://kaliscan.com      | Active |
