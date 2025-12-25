@@ -7,7 +7,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
 | MangaPark | `mangapark` | https://mangapark.io | Active |
-| AsuraScan | `asurascan` | https://asuracomic.net | Active |
+| AsuraScan | `asurascan` | https://asuracomic.net | Unstable |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
 | WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
 | LikeManga | `likemanga` | https://likemanga.io | Active |
