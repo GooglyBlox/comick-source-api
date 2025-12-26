@@ -6,7 +6,7 @@ Next.js API for scraping manga metadata from multiple sources.
 
 | Source       | ID             | Base URL                  | Status |
 | -----------  | -------------  | ------------------------- | ------ |
-| MangaPark | `mangapark` | https://mangapark.io | Unstable |
+| MangaPark | `mangapark` | https://mangapark.io | Active |
 | AsuraScan | `asurascan` | https://asuracomic.net | Active |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
 | WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
@@ -28,7 +28,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Comix        | `comix`        | https://comix.to          | Active |
 | Mangataro    | `mangataro`    | https://mangataro.org     | Active |
 | KaliScan     | `kaliscan`     | https://kaliscan.com      | Active |
-| Mangago | `mangago` | https://www.mangago.zone | Unstable |
+| Mangago | `mangago` | https://www.mangago.zone | Active |
 | Project Suki | `project-suki` | https://projectsuki.com   | Active |
 
 ## Setup
