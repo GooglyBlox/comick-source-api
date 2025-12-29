@@ -5,32 +5,32 @@ Next.js API for scraping manga metadata from multiple sources.
 [Live API](https://comick-source-api.notaspider.dev) | [Userscript](https://greasyfork.org/en/scripts/555280-comick-source-linker)
 
 | Source       | ID             | Base URL                  | Status |
-| -----------  | -------------  | ------------------------- | ------ |
-| MangaPark | `mangapark` | https://mangapark.io | Active |
-| AsuraScan | `asurascan` | https://asuracomic.net | Active |
+| ------------ | -------------- | ------------------------- | ------ |
+| AsuraScan    | `asurascan`    | https://asuracomic.net    | Active |
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com       | Active |
-| WeebCentral | `weebcentral` | https://weebcentral.com | Unstable | 
-| LikeManga | `likemanga` | https://likemanga.io | Active |
-| ManhuaUS | `manhuaus` | https://manhuaus.com | Unstable |
-| MangaRead    | `mangaread`    | https://mangaread.org     | Active |
-| Mgeko | `mgeko` | https://mgeko.cc | Active |
-| NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
-| FlameComics | `flamecomics` | https://flamecomics.xyz | Active |
-| Bato | `bato` | https://bato.to | Unstable |
-| Mangaloom | `mangaloom` | https://mangaloom.com | Active |
-| MangaYY | `mangayy` | https://mangayy.org | Active |
-| TopManhua | `topmanhua` | https://manhuatop.org | Active |
-| LagoonScans  | `lagoonscans`  | https://lagoonscans.com   | Active |
-| Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
-| Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
-| Falcon Scans | `falcon-scans` | https://falconscans.com | Unstable |
-| Raven Scans | `raven-scans` | https://ravenscans.org | Active |
+| Bato         | `bato`         | https://bato.to           | Unstable |
 | Comix        | `comix`        | https://comix.to          | Active |
-| Mangataro    | `mangataro`    | https://mangataro.org     | Active |
+| Falcon Scans | `falcon-scans` | https://falconscans.com   | Unstable |
+| FlameComics  | `flamecomics`  | https://flamecomics.xyz   | Active |
 | KaliScan     | `kaliscan`     | https://kaliscan.com      | Active |
-| Mangago | `mangago` | https://www.mangago.zone | Active |
+| LagoonScans  | `lagoonscans`  | https://lagoonscans.com   | Active |
+| LikeManga    | `likemanga`    | https://likemanga.io      | Active |
+| Mangago      | `mangago`      | https://www.mangago.zone  | Active |
+| Mangaloom    | `mangaloom`    | https://mangaloom.com     | Active |
+| MangaPark    | `mangapark`    | https://mangapark.io      | Active |
+| MangaRead    | `mangaread`    | https://mangaread.org     | Active |
+| Mangataro    | `mangataro`    | https://mangataro.org     | Active |
+| MangaYY      | `mangayy`      | https://mangayy.org       | Active |
+| ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Unstable |
+| Mgeko        | `mgeko`        | https://mgeko.cc          | Active |
+| NovelCool    | `novelcool`    | https://www.novelcool.com | Active |
 | Project Suki | `project-suki` | https://projectsuki.com   | Active |
-| Weebdex | `weebdex` | https://weebdex.org | Active |
+| Raven Scans  | `raven-scans`  | https://ravenscans.org    | Active |
+| Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active |
+| Stonescape   | `stonescape`   | https://stonescape.xyz    | Active |
+| TopManhua    | `topmanhua`    | https://manhuatop.org     | Active |
+| WeebCentral  | `weebcentral`  | https://weebcentral.com   | Unstable |
+| Weebdex      | `weebdex`      | https://weebdex.org       | Active |
 
 ## Setup
 

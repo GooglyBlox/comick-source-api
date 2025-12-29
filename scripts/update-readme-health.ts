@@ -44,9 +44,14 @@ async function fetchHealthFromAPI(): Promise<HealthResponse["sources"]> {
   return data.sources;
 }
 
-function updateReadme(
-  healthResults: HealthResponse["sources"],
-): boolean {
+interface TableRow {
+  sourceName: string;
+  sourceId: string;
+  baseUrl: string;
+  status: string;
+}
+
+function updateReadme(healthResults: HealthResponse["sources"]): boolean {
   const readmePath = path.join(process.cwd(), "README.md");
   let readme = fs.readFileSync(readmePath, "utf-8");
   let hasChanges = false;
@@ -58,31 +63,66 @@ function updateReadme(
 
   // Table format: | Source | ID | Base URL | Status |
   const tableRowRegex =
-    /^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*(Active|Unstable)\s*\|/gm;
+    /^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*(Active|Unstable)\s*\|$/gm;
 
-  readme = readme.replace(
-    tableRowRegex,
-    (match, sourceName, sourceId, baseUrl, currentStatus) => {
-      const health = healthResults[sourceId];
+  const rows: TableRow[] = [];
+  let match;
+  while ((match = tableRowRegex.exec(readme)) !== null) {
+    const [, sourceName, sourceId, baseUrl, currentStatus] = match;
+    const health = healthResults[sourceId];
+    let newStatus = currentStatus.trim();
 
-      if (!health) {
-        console.log(`  No health data for ${sourceId}, keeping current status`);
-        return match;
-      }
-
-      const newStatus = getStatusText(health.status);
-
-      if (currentStatus !== newStatus) {
+    if (health) {
+      const computedStatus = getStatusText(health.status);
+      if (currentStatus.trim() !== computedStatus) {
         console.log(
-          `  Updating ${sourceId}: ${currentStatus} -> ${newStatus} (${health.status}: ${health.message})`,
+          `  Updating ${sourceId}: ${currentStatus.trim()} -> ${computedStatus} (${health.status}: ${health.message})`,
         );
         hasChanges = true;
-        return `| ${sourceName.trim()} | \`${sourceId}\` | ${baseUrl.trim()} | ${newStatus} |`;
+        newStatus = computedStatus;
       }
+    } else {
+      console.log(`  No health data for ${sourceId}, keeping current status`);
+    }
 
-      return match;
-    },
+    rows.push({
+      sourceName: sourceName.trim(),
+      sourceId,
+      baseUrl: baseUrl.trim(),
+      status: newStatus,
+    });
+  }
+
+  const originalOrder = rows.map((r) => r.sourceName).join(",");
+  rows.sort((a, b) =>
+    a.sourceName.toLowerCase().localeCompare(b.sourceName.toLowerCase()),
   );
+  const sortedOrder = rows.map((r) => r.sourceName).join(",");
+
+  if (originalOrder !== sortedOrder) {
+    console.log("  Reordering sources alphabetically");
+    hasChanges = true;
+  }
+
+  const colWidths = {
+    source: Math.max(12, ...rows.map((r) => r.sourceName.length)),
+    id: Math.max(14, ...rows.map((r) => r.sourceId.length + 2)),
+    url: Math.max(25, ...rows.map((r) => r.baseUrl.length)),
+    status: 8,
+  };
+
+  const header = `| ${"Source".padEnd(colWidths.source)} | ${"ID".padEnd(colWidths.id)} | ${"Base URL".padEnd(colWidths.url)} | ${"Status".padEnd(colWidths.status)} |`;
+  const separator = `| ${"-".repeat(colWidths.source)} | ${"-".repeat(colWidths.id)} | ${"-".repeat(colWidths.url)} | ${"-".repeat(colWidths.status)} |`;
+  const tableRows = rows.map((row) => {
+    const id = `\`${row.sourceId}\``;
+    return `| ${row.sourceName.padEnd(colWidths.source)} | ${id.padEnd(colWidths.id)} | ${row.baseUrl.padEnd(colWidths.url)} | ${row.status.padEnd(colWidths.status)} |`;
+  });
+
+  const newTable = [header, separator, ...tableRows].join("\n");
+
+  const fullTableRegex =
+    /\| Source\s*\| ID\s*\| Base URL\s*\| Status\s*\|[\s\S]*?(?=\n\n)/;
+  readme = readme.replace(fullTableRegex, newTable);
 
   if (hasChanges) {
     fs.writeFileSync(readmePath, readme);
