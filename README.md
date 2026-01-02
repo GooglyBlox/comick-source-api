@@ -17,9 +17,9 @@ Next.js API for scraping manga metadata from multiple sources.
 | LikeManga    | `likemanga`    | https://likemanga.io      | Active   |
 | Mangago      | `mangago`      | https://www.mangago.zone  | Active   |
 | Mangaloom    | `mangaloom`    | https://mangaloom.com     | Active   |
-| MangaPark    | `mangapark`    | https://mangapark.io      | Unstable |
+| MangaPark    | `mangapark`    | https://mangapark.io      | Active   |
 | MangaRead    | `mangaread`    | https://mangaread.org     | Active   |
-| Mangataro    | `mangataro`    | https://mangataro.org     | Unstable |
+| Mangataro    | `mangataro`    | https://mangataro.org     | Active   |
 | MangaYY      | `mangayy`      | https://mangayy.org       | Active   |
 | ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Unstable |
 | Mgeko        | `mgeko`        | https://mgeko.cc          | Active   |
@@ -27,7 +27,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Project Suki | `project-suki` | https://projectsuki.com   | Active   |
 | Raven Scans  | `raven-scans`  | https://ravenscans.org    | Active   |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active   |
-| Stonescape   | `stonescape`   | https://stonescape.xyz    | Active   |
+| Stonescape   | `stonescape`   | https://stonescape.xyz    | Unstable |
 | TopManhua    | `topmanhua`    | https://manhuatop.org     | Active   |
 | WeebCentral  | `weebcentral`  | https://weebcentral.com   | Unstable |
 | Weebdex      | `weebdex`      | https://weebdex.org       | Active   |
