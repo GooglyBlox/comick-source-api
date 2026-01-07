@@ -17,11 +17,11 @@ Next.js API for scraping manga metadata from multiple sources.
 | LikeManga    | `likemanga`    | https://likemanga.io      | Active   |
 | Mangago      | `mangago`      | https://www.mangago.zone  | Active   |
 | Mangaloom    | `mangaloom`    | https://mangaloom.com     | Active   |
-| MangaPark    | `mangapark`    | https://mangapark.io      | Active   |
+| MangaPark    | `mangapark`    | https://mangapark.io      | Unstable |
 | MangaRead    | `mangaread`    | https://mangaread.org     | Active   |
 | Mangataro    | `mangataro`    | https://mangataro.org     | Active   |
 | MangaYY      | `mangayy`      | https://mangayy.org       | Active   |
-| ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Active   |
+| ManhuaUS     | `manhuaus`     | https://manhuaus.com      | Unstable |
 | Mgeko        | `mgeko`        | https://mgeko.cc          | Active   |
 | NovelCool    | `novelcool`    | https://www.novelcool.com | Active   |
 | Project Suki | `project-suki` | https://projectsuki.com   | Active   |
