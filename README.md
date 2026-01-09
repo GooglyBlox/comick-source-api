@@ -25,6 +25,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Mgeko        | `mgeko`        | https://mgeko.cc          | Active   |
 | NovelCool    | `novelcool`    | https://www.novelcool.com | Active   |
 | Project Suki | `project-suki` | https://projectsuki.com   | Active   |
+| Qi Scans     | `qi-scans`     | https://qiscans.org       | Active   |
 | Raven Scans  | `raven-scans`  | https://ravenscans.org    | Active   |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active   |
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active   |
