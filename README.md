@@ -29,6 +29,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Raven Scans  | `raven-scans`  | https://ravenscans.org    | Active   |
 | Rizz Fables  | `rizz-fables`  | https://rizzfables.com    | Active   |
 | Stonescape   | `stonescape`   | https://stonescape.xyz    | Active   |
+| Thunderscans | `thunderscans` | https://en-thunderscans.com | Active   |
 | TopManhua    | `topmanhua`    | https://manhuatop.org     | Active   |
 | WeebCentral  | `weebcentral`  | https://weebcentral.com   | Unstable |
 | Weebdex      | `weebdex`      | https://weebdex.org       | Active   |
