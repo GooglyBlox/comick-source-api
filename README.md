@@ -17,7 +17,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | LikeManga    | `likemanga`    | https://likemanga.io        | Active   |
 | Mangago      | `mangago`      | https://www.mangago.zone    | Active   |
 | Mangaloom    | `mangaloom`    | https://mangaloom.com       | Active   |
-| MangaPark    | `mangapark`    | https://mangapark.io        | Unstable |
+| MangaPark    | `mangapark`    | https://mangapark.io        | Active   |
 | MangaRead    | `mangaread`    | https://mangaread.org       | Active   |
 | Mangataro    | `mangataro`    | https://mangataro.org       | Active   |
 | MangaYY      | `mangayy`      | https://mangayy.org         | Active   |
