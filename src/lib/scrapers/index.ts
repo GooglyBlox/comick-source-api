@@ -22,6 +22,7 @@ import { RavenScansScraper } from "./ravenscans";
 import { MangataroScraper } from "./mangataro";
 import { KaliScanScraper } from "./kaliscan";
 import { MangagoScraper } from "./mangago";
+import { PhiliascansScraper } from "./philiascans";
 import { ProjectSukiScraper } from "./projectsuki";
 import { WeebdexScraper } from "./weebdex";
 import { QiScansScraper } from "./qiscans";
@@ -54,6 +55,7 @@ const scrapers: BaseScraper[] = [
   new MangataroScraper(),
   new KaliScanScraper(),
   new MangagoScraper(),
+  new PhiliascansScraper(),
   new ProjectSukiScraper(),
   new WeebdexScraper(),
   new QiScansScraper(),
@@ -118,6 +120,7 @@ export {
   MangataroScraper,
   KaliScanScraper,
   MangagoScraper,
+  PhiliascansScraper,
   ProjectSukiScraper,
   WeebdexScraper,
   QiScansScraper,
