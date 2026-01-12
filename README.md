@@ -11,6 +11,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | AtsuMoe      | `atsumoe`      | https://atsumoe.com         | Active   |
 | Bato         | `bato`         | https://bato.to             | Unstable |
 | Comix        | `comix`        | https://comix.to            | Active   |
+| Elf Toon     | `elf-toon`     | https://elftoon.com         | Active   |
 | Falcon Scans | `falcon-scans` | https://falconscans.com     | Unstable |
 | FlameComics  | `flamecomics`  | https://flamecomics.xyz     | Active   |
 | KaliScan     | `kaliscan`     | https://kaliscan.com        | Active   |

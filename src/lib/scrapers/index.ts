@@ -33,6 +33,7 @@ import { ArvenComicsScraper } from "./arvencomics";
 import { LuaComicScraper } from "./luacomic";
 import { VioletscansScraper } from "./violetscans";
 import { WitchscansScraper } from "./witchscans";
+import { ElfToonScraper } from "./elftoon";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -70,6 +71,7 @@ const scrapers: BaseScraper[] = [
   new LuaComicScraper(),
   new VioletscansScraper(),
   new WitchscansScraper(),
+  new ElfToonScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -139,4 +141,5 @@ export {
   LuaComicScraper,
   VioletscansScraper,
   WitchscansScraper,
+  ElfToonScraper,
 };
