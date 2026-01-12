@@ -41,6 +41,7 @@ import { SilentQuillScraper } from "./silentquill";
 import { TempleToonsScraper } from "./templetoons";
 import { AsmotoonScraper } from "./asmotoon";
 import { SpiderScansScraper } from "./spiderscans";
+import { GDScansScraper } from "./gdscans";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -86,6 +87,7 @@ const scrapers: BaseScraper[] = [
   new TempleToonsScraper(),
   new AsmotoonScraper(),
   new SpiderScansScraper(),
+  new GDScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -163,4 +165,5 @@ export {
   TempleToonsScraper,
   AsmotoonScraper,
   SpiderScansScraper,
+  GDScansScraper,
 };

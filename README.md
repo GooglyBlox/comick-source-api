@@ -15,6 +15,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Elf Toon       | `elf-toon`      | https://elftoon.com         | Active   |
 | Falcon Scans   | `falcon-scans`  | https://falconscans.com     | Unstable |
 | FlameComics    | `flamecomics`   | https://flamecomics.xyz     | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com | Active   |
 | KaliScan       | `kaliscan`      | https://kaliscan.com        | Active   |
 | KDT Scans      | `kdt-scans`     | https://www.silentquill.net | Active   |
 | LagoonScans    | `lagoonscans`   | https://lagoonscans.com     | Active   |
