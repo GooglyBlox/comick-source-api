@@ -38,7 +38,8 @@ Next.js API for scraping manga metadata from multiple sources.
 | UTOON        | `utoon`        | https://utoon.net           | Active   |
 | Violetscans  | `violetscans`  | https://violetscans.org     | Active   |
 | Vortex Scans | `vortex-scans` | https://vortexscans.org     | Active   |
-| WitchScans   | `witchscans`   | https://witchscans.com      | Active   |
+| WitchScans   | `witchscans`     | https://witchscans.com    | Active   |
+| Writers' Scans | `writers-scans` | https://writerscans.com  | Active   |
 | WeebCentral  | `weebcentral`  | https://weebcentral.com     | Unstable |
 | Weebdex      | `weebdex`      | https://weebdex.org         | Active   |
 
