@@ -5,7 +5,7 @@ import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class SilentQuillScraper extends BaseScraper {
   getName(): string {
-    return "SilentQuill";
+    return "KDT Scans"; // aka "SilentQuill"? not super sure what name they go by
   }
 
   getBaseUrl(): string {
