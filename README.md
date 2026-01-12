@@ -13,7 +13,6 @@ Next.js API for scraping manga metadata from multiple sources.
 | Bato               | `bato`               | https://bato.to             | Unstable |
 | Comix              | `comix`              | https://comix.to            | Active   |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
-| EZ Manga           | `ez-manga`           | https://ezmanga.org         | Unstable |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Unstable |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
