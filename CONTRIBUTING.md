@@ -36,6 +36,10 @@ export class YourSourceScraper extends BaseScraper {
     return "https://yoursource.com";
   }
 
+  getType(): SourceType {
+    return "scanlator"; // or "aggregator"
+  }
+
   canHandle(url: string): boolean {
     return url.includes("yoursource.com");
   }
