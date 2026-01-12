@@ -5,6 +5,7 @@ import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class PhiliascansScraper extends BaseScraper {
   private readonly BASE_URL = "https://philiascans.org";
+  private cachedNonce: string | null = null;
 
   getName(): string {
     return "Philia Scans";
@@ -20,6 +21,28 @@ export class PhiliascansScraper extends BaseScraper {
 
   canHandle(url: string): boolean {
     return url.includes("philiascans.org");
+  }
+
+  private async getNonce(): Promise<string> {
+    if (this.cachedNonce) {
+      return this.cachedNonce;
+    }
+
+    const html = await this.fetchWithRetry(`${this.BASE_URL}/all-mangas/`);
+
+    const nonceMatch = html.match(/liveSearchData\s*=\s*\{[^}]*"nonce"\s*:\s*"([^"]+)"/);
+    if (nonceMatch) {
+      this.cachedNonce = nonceMatch[1];
+      return this.cachedNonce;
+    }
+
+    const altMatch = html.match(/security['"]\s*:\s*['"]([a-f0-9]+)['"]/);
+    if (altMatch) {
+      this.cachedNonce = altMatch[1];
+      return this.cachedNonce;
+    }
+
+    throw new Error("Could not extract search nonce from page");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -115,10 +138,11 @@ export class PhiliascansScraper extends BaseScraper {
 
   async search(query: string): Promise<SearchResult[]> {
     try {
+      const nonce = await this.getNonce();
       const searchUrl = `${this.BASE_URL}/wp-admin/admin-ajax.php`;
       const formData = new URLSearchParams();
       formData.append("action", "live_search");
-      formData.append("security", "0a8cc718ec");
+      formData.append("security", nonce);
       formData.append("search_query", query);
 
       const response = await fetch(searchUrl, {
