@@ -35,6 +35,7 @@ import { VioletscansScraper } from "./violetscans";
 import { WitchscansScraper } from "./witchscans";
 import { ElfToonScraper } from "./elftoon";
 import { WritersScansScraper } from "./writerscans";
+import { MadaraScansScraper } from "./madarascans";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -74,6 +75,7 @@ const scrapers: BaseScraper[] = [
   new WitchscansScraper(),
   new ElfToonScraper(),
   new WritersScansScraper(),
+  new MadaraScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -145,4 +147,5 @@ export {
   WitchscansScraper,
   ElfToonScraper,
   WritersScansScraper,
+  MadaraScansScraper,
 };
