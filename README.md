@@ -36,11 +36,11 @@ Next.js API for scraping manga metadata from multiple sources.
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Active   |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qiscans.org         | Active   |
-| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Unstable |
+| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Active   |
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
-| Temple Scan        | `temple-scan`        | https://templetoons.com     | Unstable |
+| Temple Scan        | `temple-scan`        | https://templetoons.com     | Active   |
 | Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Active   |
 | TopManhua          | `topmanhua`          | https://manhuatop.org       | Active   |
 | UTOON              | `utoon`              | https://utoon.net           | Active   |
