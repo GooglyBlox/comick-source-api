@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
 | Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
-| MangaPark          | `mangapark`          | https://mangapark.io        | Unstable |
+| MangaPark          | `mangapark`          | https://mangapark.io        | Active   |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
@@ -37,7 +37,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Active   |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qiscans.org         | Active   |
-| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
+| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Unstable |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Active   |
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
