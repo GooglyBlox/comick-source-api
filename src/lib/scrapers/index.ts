@@ -31,6 +31,7 @@ import { ThunderscansScraper } from "./thunderscans";
 import { UtoonScraper } from "./utoon";
 import { VortexScansScraper } from "./vortexscans";
 import { ArvenComicsScraper } from "./arvencomics";
+import { AryaScansScraper } from "./arya-scans";
 import { LuaComicScraper } from "./luacomic";
 import { VioletscansScraper } from "./violetscans";
 import { WitchscansScraper } from "./witchscans";
@@ -80,6 +81,7 @@ const scrapers: BaseScraper[] = [
   new UtoonScraper(),
   new VortexScansScraper(),
   new ArvenComicsScraper(),
+  new AryaScansScraper(),
   new LuaComicScraper(),
   new VioletscansScraper(),
   new WitchscansScraper(),
@@ -161,6 +163,7 @@ export {
   UtoonScraper,
   VortexScansScraper,
   ArvenComicsScraper,
+  AryaScansScraper,
   LuaComicScraper,
   VioletscansScraper,
   WitchscansScraper,
