@@ -18,6 +18,7 @@ import { StonescapeScraper } from "./stonescape";
 import { RizzFablesScraper } from "./rizzfables";
 import { FalconscansScraper } from "./falconscans";
 import { ComixScraper } from "./comix";
+import { DemonicscansScraper } from "./demonicscans";
 import { RavenScansScraper } from "./ravenscans";
 import { RitharscansScraper } from "./ritharscans";
 import { RokariComicsScraper } from "./rokaricomics";
@@ -73,6 +74,7 @@ const scrapers: BaseScraper[] = [
   new RizzFablesScraper(),
   new FalconscansScraper(),
   new ComixScraper(),
+  new DemonicscansScraper(),
   new RavenScansScraper(),
   new RitharscansScraper(),
   new RokariComicsScraper(),
@@ -160,6 +162,7 @@ export {
   RizzFablesScraper,
   FalconscansScraper,
   ComixScraper,
+  DemonicscansScraper,
   RavenScansScraper,
   RitharscansScraper,
   RokariComicsScraper,
