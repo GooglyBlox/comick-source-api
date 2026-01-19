@@ -52,6 +52,7 @@ import { FirescansScraper } from "./firescans";
 import { YakshascansScraper } from "./yakshascans";
 import { LHTranslationScraper } from "./lhtranslation";
 import { KenscansScraper } from "./kenscans";
+import { MangaKatanaScraper } from "./mangakatana";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -108,6 +109,7 @@ const scrapers: BaseScraper[] = [
   new YakshascansScraper(),
   new LHTranslationScraper(),
   new KenscansScraper(),
+  new MangaKatanaScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -196,4 +198,5 @@ export {
   YakshascansScraper,
   LHTranslationScraper,
   KenscansScraper,
+  MangaKatanaScraper,
 };
