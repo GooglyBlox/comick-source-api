@@ -29,10 +29,10 @@ Next.js API for scraping manga metadata from multiple sources.
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
 | Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
-| Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
-| Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Active   |
+| Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
 | MangaKatana        | `mangakatana`        | https://mangakatana.com     | Active   |
+| Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
 | MangaPark          | `mangapark`          | https://mangapark.io        | Active   |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
@@ -44,7 +44,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Active   |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qiscans.org         | Active   |
-| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Unstable |
+| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com    | Active   |
