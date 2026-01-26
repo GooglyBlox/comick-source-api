@@ -50,6 +50,7 @@ import { KappaBeastScraper } from "./kappabeast";
 import { MagusToonScraper } from "./magustoon";
 import { FirescansScraper } from "./firescans";
 import { YakshascansScraper } from "./yakshascans";
+import { YakshacomicsScraper } from "./yakshacomics";
 import { LHTranslationScraper } from "./lhtranslation";
 import { KenscansScraper } from "./kenscans";
 import { MangaKatanaScraper } from "./mangakatana";
@@ -108,6 +109,7 @@ const scrapers: BaseScraper[] = [
   new MagusToonScraper(),
   new FirescansScraper(),
   new YakshascansScraper(),
+  new YakshacomicsScraper(),
   new LHTranslationScraper(),
   new KenscansScraper(),
   new MangaKatanaScraper(),
@@ -198,6 +200,7 @@ export {
   MagusToonScraper,
   FirescansScraper,
   YakshascansScraper,
+  YakshacomicsScraper,
   LHTranslationScraper,
   KenscansScraper,
   MangaKatanaScraper,

@@ -61,6 +61,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | WitchScans         | `witchscans`         | https://witchscans.com      | Active   |
 | Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
 | Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
+| Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
 
 ## Setup
 
