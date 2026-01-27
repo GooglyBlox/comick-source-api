@@ -18,10 +18,10 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Unstable |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
-| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Unstable |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | LagoonScans        | `lagoonscans`        | https://lagoonscans.com     | Active   |
@@ -33,10 +33,10 @@ Next.js API for scraping manga metadata from multiple sources.
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Active   |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
 | MangaKatana        | `mangakatana`        | https://mangakatana.com     | Active   |
-| Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
 | Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
 | MangaPark          | `mangapark`          | https://mangapark.io        | Unstable |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
+| Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
@@ -57,14 +57,14 @@ Next.js API for scraping manga metadata from multiple sources.
 | Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Active   |
 | TopManhua          | `topmanhua`          | https://manhuatop.org       | Active   |
 | UTOON              | `utoon`              | https://utoon.net           | Active   |
-| Violetscans        | `violetscans`        | https://violetscans.org     | Unstable |
+| Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
 | WeebCentral        | `weebcentral`        | https://weebcentral.com     | Unstable |
 | Weebdex            | `weebdex`            | https://weebdex.org         | Active   |
 | WitchScans         | `witchscans`         | https://witchscans.com      | Active   |
 | Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
-| Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
 | Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
+| Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
 
 ## Setup
 
