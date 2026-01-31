@@ -13,7 +13,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
 | Bato               | `bato`               | https://bato.to             | Unstable |
 | Comix              | `comix`              | https://comix.to            | Active   |
-| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
+| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Unstable |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Unstable |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
