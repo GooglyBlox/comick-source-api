@@ -19,6 +19,7 @@ import { RizzFablesScraper } from "./rizzfables";
 import { FalconscansScraper } from "./falconscans";
 import { ComixScraper } from "./comix";
 import { DemonicscansScraper } from "./demonicscans";
+import { DivaScansScraper } from "./divascans";
 import { RavenScansScraper } from "./ravenscans";
 import { RdscansScraper } from "./rdscans";
 import { RitharscansScraper } from "./ritharscans";
@@ -126,6 +127,7 @@ const scrapers: BaseScraper[] = [
   new MangaCloudScraper(),
   new MistScansScraper(),
   new RageScansScraper(),
+  new DivaScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -223,4 +225,5 @@ export {
   MangaCloudScraper,
   MistScansScraper,
   RageScansScraper,
+  DivaScansScraper,
 };
