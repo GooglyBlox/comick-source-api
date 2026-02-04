@@ -31,6 +31,13 @@ interface SourceHealth {
   lastChecked: string;
 }
 
+const MANUAL_SOURCE_STATUS: Record<string, "Shutdown"> = {
+  "bato": "Shutdown",
+  "falcon-scans": "Shutdown",
+  "mangapark": "Shutdown",
+  "mangataro": "Shutdown",
+};
+
 interface EndpointProps {
   method: string;
   path: string;
@@ -281,6 +288,9 @@ export default function Home() {
   }, []);
 
   const getStatusColor = (status?: string) => {
+    if (status === "shutdown") {
+      return "bg-zinc-500";
+    }
     switch (status) {
       case "healthy":
         return "bg-emerald-500";
@@ -296,6 +306,9 @@ export default function Home() {
   };
 
   const getStatusTextColor = (status?: string) => {
+    if (status === "shutdown") {
+      return "text-zinc-400";
+    }
     switch (status) {
       case "healthy":
         return "text-emerald-400";
@@ -311,6 +324,9 @@ export default function Home() {
   };
 
   const getStatusLabel = (status?: string) => {
+    if (status === "shutdown") {
+      return "Shutdown";
+    }
     switch (status) {
       case "healthy":
         return "Operational";
@@ -406,9 +422,14 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {sources.map((source) => {
+                const manualStatus = MANUAL_SOURCE_STATUS[source.id];
+                const effectiveStatus =
+                  manualStatus === "Shutdown"
+                    ? "shutdown"
+                    : health[source.id]?.status;
                 const sourceHealth = health[source.id];
-                const statusColor = getStatusColor(sourceHealth?.status);
-                const statusLabel = getStatusLabel(sourceHealth?.status);
+                const statusColor = getStatusColor(effectiveStatus);
+                const statusLabel = getStatusLabel(effectiveStatus);
 
                 return (
                   <div
@@ -443,7 +464,7 @@ export default function Home() {
                     {sourceHealth && (
                       <div className="flex items-center justify-between text-xs border-t border-zinc-200 dark:border-zinc-800 pt-3">
                         <span
-                          className={getStatusTextColor(sourceHealth.status)}
+                          className={getStatusTextColor(effectiveStatus)}
                         >
                           {statusLabel}
                         </span>

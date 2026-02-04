@@ -63,7 +63,7 @@ function updateReadme(healthResults: HealthResponse["sources"]): boolean {
 
   // Table format: | Source | ID | Base URL | Status |
   const tableRowRegex =
-    /^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*(Active|Unstable)\s*\|$/gm;
+    /^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*(Active|Unstable|Shutdown)\s*\|$/gm;
 
   const rows: TableRow[] = [];
   let match;
@@ -72,7 +72,7 @@ function updateReadme(healthResults: HealthResponse["sources"]): boolean {
     const health = healthResults[sourceId];
     let newStatus = currentStatus.trim();
 
-    if (health) {
+    if (health && newStatus !== "Shutdown") {
       const computedStatus = getStatusText(health.status);
       if (currentStatus.trim() !== computedStatus) {
         console.log(
