@@ -35,7 +35,6 @@ const MANUAL_SOURCE_STATUS: Record<string, "Shutdown"> = {
   "bato": "Shutdown",
   "falcon-scans": "Shutdown",
   "mangapark": "Shutdown",
-  "mangataro": "Shutdown",
 };
 
 interface EndpointProps {
