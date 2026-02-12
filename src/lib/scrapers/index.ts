@@ -49,6 +49,7 @@ import { TempleToonsScraper } from "./templetoons";
 import { AsmotoonScraper } from "./asmotoon";
 import { SpiderScansScraper } from "./spiderscans";
 import { GDScansScraper } from "./gdscans";
+import { GreedScansScraper } from "./greedscans";
 import { KappaBeastScraper } from "./kappabeast";
 import { MagusToonScraper } from "./magustoon";
 import { FirescansScraper } from "./firescans";
@@ -115,6 +116,7 @@ const scrapers: BaseScraper[] = [
   new AsmotoonScraper(),
   new SpiderScansScraper(),
   new GDScansScraper(),
+  new GreedScansScraper(),
   new KappaBeastScraper(),
   new MagusToonScraper(),
   new FirescansScraper(),
@@ -215,6 +217,7 @@ export {
   AsmotoonScraper,
   SpiderScansScraper,
   GDScansScraper,
+  GreedScansScraper,
   KappaBeastScraper,
   MagusToonScraper,
   FirescansScraper,
