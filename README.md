@@ -23,6 +23,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
+| Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
 | KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
