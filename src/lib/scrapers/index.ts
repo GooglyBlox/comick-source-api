@@ -66,6 +66,7 @@ import { MistScansScraper } from "./mistscans";
 import { RageScansScraper } from "./ragescans";
 import { AthreaScansScraper } from "./athreascans";
 import { HadesScansScraper } from "./hadesscans";
+import { WebtoonScraper } from "./webtoon";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -136,6 +137,7 @@ const scrapers: BaseScraper[] = [
   new DivaScansScraper(),
   new EvaScansScraper(),
   new HadesScansScraper(),
+  new WebtoonScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -238,4 +240,5 @@ export {
   DivaScansScraper,
   EvaScansScraper,
   HadesScansScraper,
+  WebtoonScraper,
 };
