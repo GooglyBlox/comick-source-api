@@ -10,7 +10,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Active   |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asuracomic.net      | Active   |
-| Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Unstable |
+| Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Active   |
@@ -21,7 +21,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
-| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Unstable |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
@@ -43,14 +43,14 @@ Next.js API for scraping manga metadata from multiple sources.
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
-| Mangataro          | `mangataro`          | https://mangataro.org       | Unstable |
+| Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
-| Mist Scans         | `mist-scans`         | https://mistscans.com       | Unstable |
+| Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
 | NovelCool          | `novelcool`          | https://www.novelcool.com   | Active   |
-| Philia Scans       | `philia-scans`       | https://philiascans.org     | Unstable |
+| Philia Scans       | `philia-scans`       | https://philiascans.org     | Active   |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qiscans.org         | Active   |
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Active   |
@@ -68,9 +68,9 @@ Next.js API for scraping manga metadata from multiple sources.
 | Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
 | WEBTOON            | `webtoon`            | https://www.webtoons.com    | Active   |
-| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Active   |
+| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Unstable |
 | Weebdex            | `weebdex`            | https://weebdex.org         | Active   |
-| WitchScans         | `witchscans`         | https://witchscans.com      | Unstable |
+| WitchScans         | `witchscans`         | https://witchscans.com      | Active   |
 | Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
 | Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
 | Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
