@@ -15,8 +15,8 @@ Next.js API for scraping manga metadata from multiple sources.
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
-| Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
-| Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
+| Diva Scans         | `diva-scans`         | https://divatoon.com        | Active   |
+| Elf Toon           | `elf-toon`           | https://elftoon.com         | Unstable |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
@@ -36,14 +36,14 @@ Next.js API for scraping manga metadata from multiple sources.
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
 | Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
-| MangaCloud         | `mangacloud`         | https://mangacloud.org      | Unstable |
+| MangaCloud         | `mangacloud`         | https://mangacloud.org      | Active   |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
 | MangaKatana        | `mangakatana`        | https://mangakatana.com     | Active   |
 | Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
-| Mangataro          | `mangataro`          | https://mangataro.org       | Unstable |
+| Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Unstable |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
