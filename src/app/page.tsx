@@ -107,7 +107,7 @@ const endpoints: EndpointProps[] = [
   {
     method: "POST",
     path: "/api/pages",
-    description: "Get chapter page images (currently supports KaliScan)",
+    description: "Get chapter page images",
     request: `{
   "url": "https://kaliscan.com/manga/12345-some-manga/chapter-1",
   "source": "kaliscan"  // optional
