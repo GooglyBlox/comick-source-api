@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult } from "@/types";
 
 export class MgekoScraper extends BaseScraper {
   getName(): string {
@@ -102,6 +102,25 @@ export class MgekoScraper extends BaseScraper {
     }
 
     return -1;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $("#chapter-reader img[id^='image-']").each((_, el) => {
+      const url = $(el).attr("src")?.trim();
+      if (url) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {

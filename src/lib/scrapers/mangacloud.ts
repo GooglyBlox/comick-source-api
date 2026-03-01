@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangaCloudScraper extends BaseScraper {
   private readonly BASE_URL = "https://mangacloud.org";
@@ -177,6 +177,35 @@ export class MangaCloudScraper extends BaseScraper {
       console.error("[MangaCloud] Error fetching chapters:", error);
       throw error;
     }
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const match = chapterUrl.match(/\/chapter\/([^/?]+)/) || chapterUrl.match(/[-/]([a-zA-Z0-9]+)$/);
+    if (!match) return [];
+
+    const chapterId = match[1];
+    const response = await fetch(`${this.API_URL}/chapter/${chapterId}`, {
+      headers: {
+        "Accept": "*/*",
+        "Origin": this.BASE_URL,
+        "Referer": `${this.BASE_URL}/`,
+        "User-Agent": this.config.userAgent,
+      },
+    });
+
+    if (!response.ok) return [];
+    const data = await response.json();
+    const chapter = data.chapter || data;
+    const images: { id: string; f: string }[] = chapter.images || chapter.md_images || [];
+
+    return images.map((img, index) => ({
+      url: `https://meo3.comick.pictures/${img.id}.${img.f || "jpg"}`,
+      page: index + 1,
+    }));
   }
 
   protected override extractChapterNumber(chapterUrl: string): number {

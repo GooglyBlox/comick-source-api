@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseScraper } from './base';
-import { ScrapedChapter, SearchResult, SourceType } from '@/types';
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from '@/types';
 
 export class ComixScraper extends BaseScraper {
   private readonly baseUrl = 'https://comix.to';
@@ -132,6 +132,26 @@ export class ComixScraper extends BaseScraper {
       return parseFloat(match[1]);
     }
     return 0;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const match = chapterUrl.match(/\/(\d+)-chapter-/) || chapterUrl.match(/\/title\/[^/]+\/([^-]+)/);
+    if (!match) return [];
+
+    const chapterId = match[1];
+    const response = await fetch(`${this.apiBase}/chapters/${chapterId}`, {
+      headers: { 'User-Agent': this.config.userAgent },
+    });
+
+    if (!response.ok) return [];
+    const data = await response.json();
+    const images: { url: string }[] = data.images || data.chapter?.images || [];
+
+    return images.map((img, index) => ({ url: img.url, page: index + 1 }));
   }
 
   async search(query: string): Promise<SearchResult[]> {

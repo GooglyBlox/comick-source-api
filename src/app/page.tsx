@@ -105,6 +105,25 @@ const endpoints: EndpointProps[] = [
 }`,
   },
   {
+    method: "POST",
+    path: "/api/pages",
+    description: "Get chapter page images",
+    request: `{
+  "url": "https://kaliscan.com/manga/12345-some-manga/chapter-1",
+  "source": "kaliscan"  // optional
+}`,
+    response: `{
+  "images": [
+    {
+      "url": "https://...",
+      "page": 1
+    }
+  ],
+  "source": "KaliScan",
+  "totalPages": 20
+}`,
+  },
+  {
     method: "GET",
     path: "/api/health",
     description: "Check health status of all sources (cached for 5 minutes)",
