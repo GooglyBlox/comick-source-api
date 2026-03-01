@@ -26,6 +26,11 @@ export interface SearchResult {
   followers?: string;
 }
 
+export interface ChapterImage {
+  url: string;
+  page: number;
+}
+
 export type SourceType = "scanlator" | "aggregator";
 
 export interface SourceInfo {

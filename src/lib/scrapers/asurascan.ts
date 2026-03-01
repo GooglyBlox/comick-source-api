@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class AsuraScanScraper extends BaseScraper {
   private readonly BASE_URL = "https://asuracomic.net";
@@ -185,6 +185,25 @@ export class AsuraScanScraper extends BaseScraper {
     });
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const imagePattern = /\{"order"\s*:\s*(\d+)\s*,\s*"url"\s*:\s*"([^"]+)"\}/g;
+    const images: ChapterImage[] = [];
+    let match;
+
+    while ((match = imagePattern.exec(html)) !== null) {
+      images.push({ url: match[2], page: parseInt(match[1]) + 1 });
+    }
+
+    images.sort((a, b) => a.page - b.page);
+    // Re-number pages sequentially
+    return images.map((img, index) => ({ ...img, page: index + 1 }));
   }
 
   protected override extractChapterNumber(chapterUrl: string, chapterText?: string): number {

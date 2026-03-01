@@ -1,4 +1,4 @@
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 interface ScraperConfig {
   retryAttempts: number;
@@ -27,6 +27,16 @@ export abstract class BaseScraper {
   ): Promise<{ title: string; id: string }>;
   abstract getChapterList(mangaUrl: string): Promise<ScrapedChapter[]>;
   abstract search(query: string): Promise<SearchResult[]>;
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    throw new Error(
+      `${this.getName()} does not support fetching chapter images`,
+    );
+  }
+
+  supportsChapterImages(): boolean {
+    return false;
+  }
 
   protected async fetchWithRetry(
     url: string,

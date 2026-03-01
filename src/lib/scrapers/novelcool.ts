@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult } from "@/types";
 
 export class NovelCoolScraper extends BaseScraper {
   getName(): string {
@@ -81,6 +81,42 @@ export class NovelCoolScraper extends BaseScraper {
     }
 
     return -1;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    // Get page count from select dropdown
+    const pageCount = $("select.sl-page option").length || 1;
+
+    // Get first page image
+    const firstImg = $(".mangaread-img img, #manga_picid_1").first().attr("src")?.trim();
+    if (firstImg) {
+      images.push({ url: firstImg, page: 1 });
+    }
+
+    // Fetch remaining pages
+    const baseUrl = chapterUrl.replace(/\.html$/, "");
+    for (let i = 2; i <= pageCount; i++) {
+      try {
+        const pageHtml = await this.fetchWithRetry(`${baseUrl}-${i}.html`);
+        const $page = cheerio.load(pageHtml);
+        const imgUrl = $page(".mangaread-img img, #manga_picid_1").first().attr("src")?.trim();
+        if (imgUrl) {
+          images.push({ url: imgUrl, page: i });
+        }
+      } catch {
+        break;
+      }
+    }
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {

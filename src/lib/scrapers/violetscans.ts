@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class VioletscansScraper extends BaseScraper {
   private readonly BASE_URL = "https://violetscans.org";
@@ -87,6 +87,24 @@ export class VioletscansScraper extends BaseScraper {
     }
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const match = html.match(/ts_reader\.run\((\{.*?\})\)/s);
+    if (!match) return [];
+
+    try {
+      const data = JSON.parse(match[1]);
+      const images: string[] = data.sources?.[0]?.images || [];
+      return images.map((url, index) => ({ url, page: index + 1 }));
+    } catch {
+      return [];
+    }
   }
 
   protected extractChapterNumber(chapterUrl: string): number {

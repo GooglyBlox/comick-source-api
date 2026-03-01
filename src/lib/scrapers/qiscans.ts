@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 interface QiScansChapter {
   id: number;
@@ -66,6 +67,39 @@ export class QiScansScraper extends BaseScraper {
     if (diffHours > 0) return `${diffHours}h ago`;
     if (diffMins > 0) return `${diffMins}m ago`;
     return "just now";
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    // Try to extract from img tags in the page
+    $("img[src*='nightsup.net'], img[src*='media.qiscans'], img[src*='uploads']").each((_, el) => {
+      const url = $(el).attr("src")?.trim();
+      if (url && url.startsWith("http")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    // If no images found, try RSC payload
+    if (images.length === 0) {
+      const imgPattern = /https?:\/\/[^"'\s]+?\.(?:jpg|jpeg|png|webp|gif)(?:\?[^"'\s]*)?/gi;
+      const allUrls = html.match(imgPattern) || [];
+      const chapterImages = allUrls.filter(
+        (url) =>
+          (url.includes("nightsup.net") || url.includes("media.qiscans") || url.includes("uploads/series")) &&
+          !url.includes("cover") && !url.includes("logo") && !url.includes("avatar")
+      );
+      const uniqueImages = Array.from(new Set(chapterImages));
+      return uniqueImages.map((url, index) => ({ url, page: index + 1 }));
+    }
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {

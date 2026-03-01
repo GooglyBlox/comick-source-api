@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class WebtoonScraper extends BaseScraper {
   private readonly BASE_URL = "https://www.webtoons.com";
@@ -165,6 +165,25 @@ export class WebtoonScraper extends BaseScraper {
     } catch {
       return { latestChapter: 0, lastUpdated: "" };
     }
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $("img._images[data-url]").each((_, el) => {
+      const url = $(el).attr("data-url")?.trim();
+      if (url) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {
