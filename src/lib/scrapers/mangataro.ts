@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangataroScraper extends BaseScraper {
   private readonly BASE_URL = "https://mangataro.org";
@@ -396,5 +396,24 @@ export class MangataroScraper extends BaseScraper {
     );
 
     return resultsWithChapterInfo.slice(0, 5);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $("#readerarea img, .reading-content img, .chapter-content img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && !url.includes("loading") && !url.includes("placeholder") && !url.includes("logo")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 }

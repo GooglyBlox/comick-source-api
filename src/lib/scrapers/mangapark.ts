@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult } from "@/types";
 
 export class MangaParkScraper extends BaseScraper {
   getName(): string {
@@ -185,5 +185,61 @@ export class MangaParkScraper extends BaseScraper {
     });
 
     return results;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const images: ChapterImage[] = [];
+
+    // MangaPark stores images in a script tag or __NEXT_DATA__
+    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+    if (nextDataMatch) {
+      try {
+        const data = JSON.parse(nextDataMatch[1]);
+        const imgList = data?.props?.pageProps?.dehydratedState?.queries?.[0]?.state?.data?.data?.imageSet?.httpLis ||
+                        data?.props?.pageProps?.dehydratedState?.queries?.[0]?.state?.data?.data?.imageSet?.wordLis || [];
+        for (const url of imgList) {
+          if (url && typeof url === 'string') {
+            images.push({ url, page: images.length + 1 });
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    if (images.length > 0) return images;
+
+    // Try to find image array in script tags
+    const imgArrayMatch = html.match(/imageSet\s*:\s*\{[^}]*httpLis\s*:\s*(\[[\s\S]*?\])/);
+    if (imgArrayMatch) {
+      try {
+        const imgUrls: string[] = JSON.parse(imgArrayMatch[1]);
+        for (const url of imgUrls) {
+          if (url && typeof url === 'string') {
+            images.push({ url, page: images.length + 1 });
+          }
+        }
+      } catch {
+        // Ignore
+      }
+    }
+
+    if (images.length > 0) return images;
+
+    // Fallback: parse img tags
+    const $ = cheerio.load(html);
+    $("img[src*='mpcdn'], img[data-src*='mpcdn']").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && url.startsWith("http")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 }
