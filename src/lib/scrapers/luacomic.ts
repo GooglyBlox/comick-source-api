@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 interface LuaComicChapter {
   id: number;
@@ -210,6 +210,33 @@ export class LuaComicScraper extends BaseScraper {
     }
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const match = chapterUrl.match(/\/series\/[^/]+\/([^/?]+)/);
+    if (!match) return [];
+
+    const chapterSlug = match[1];
+    const response = await fetch(`${this.API_URL}/chapter/${chapterSlug}`, {
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        "User-Agent": this.config.userAgent,
+        Referer: `${this.BASE_URL}/`,
+      },
+    });
+
+    if (!response.ok) return [];
+    const data = await response.json();
+    const images: { src: string }[] = data.data?.images || data.images || [];
+
+    return images.map((img, index) => ({
+      url: img.src,
+      page: index + 1,
+    }));
   }
 
   private extractChapterNumberFromName(chapterName: string): number {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from 'cheerio';
 import { BaseScraper } from './base';
-import { ScrapedChapter, SearchResult } from '@/types';
+import { ChapterImage, ScrapedChapter, SearchResult } from '@/types';
 
 export class BatoScraper extends BaseScraper {
   private readonly BASE_URL = "https://bato.to";
@@ -201,5 +201,56 @@ export class BatoScraper extends BaseScraper {
   protected extractChapterNumber(chapterUrl: string): number {
     const match = chapterUrl.match(/\/chapter\/(\d+)/);
     return match ? parseFloat(match[1]) : 0;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const images: ChapterImage[] = [];
+
+    // Try to find image URLs in JavaScript variables
+    const scriptMatch = html.match(/const\s+imgHttps\s*=\s*(\[[\s\S]*?\]);/) ||
+                        html.match(/const\s+images\s*=\s*(\[[\s\S]*?\]);/) ||
+                        html.match(/var\s+imgHttps\s*=\s*(\[[\s\S]*?\]);/) ||
+                        html.match(/var\s+images\s*=\s*(\[[\s\S]*?\]);/);
+
+    if (scriptMatch) {
+      try {
+        const imgUrls: string[] = JSON.parse(scriptMatch[1]);
+        for (const url of imgUrls) {
+          if (url && url.startsWith("http")) {
+            images.push({ url, page: images.length + 1 });
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    if (images.length > 0) return images;
+
+    // Fallback: parse img tags from the reader
+    const $ = cheerio.load(html);
+    $(".page-img img, .reader-img img, #viewer img, .chapter-img img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && url.startsWith("http") && !url.includes("logo") && !url.includes("icon")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    if (images.length === 0) {
+      // Last resort: find all images that look like chapter pages
+      $("img[src*='comic'], img[src*='chapter'], img[src*='manga']").each((_, el) => {
+        const url = $(el).attr("src")?.trim();
+        if (url && url.startsWith("http")) {
+          images.push({ url, page: images.length + 1 });
+        }
+      });
+    }
+
+    return images;
   }
 }

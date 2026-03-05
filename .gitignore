@@ -8,6 +8,8 @@
 
 # testing
 /coverage
+/scripts/
+!/scripts/update-readme-health.ts
 
 # next.js
 /.next/

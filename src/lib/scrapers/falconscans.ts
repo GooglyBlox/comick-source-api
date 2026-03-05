@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseScraper } from './base';
-import { ScrapedChapter, SearchResult, SourceType } from '@/types';
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from '@/types';
 
 export class FalconscansScraper extends BaseScraper {
   private readonly baseUrl = 'https://falconscans.com';
@@ -177,5 +177,68 @@ export class FalconscansScraper extends BaseScraper {
     }
 
     return results;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const match = chapterUrl.match(/\/manga\/([^/]+)\/chapter\/(\d+(?:\.\d+)?)/);
+    if (!match) return [];
+
+    const slug = match[1];
+    const chapterNumber = match[2];
+
+    try {
+      const response = await fetch(`${this.apiBase}/manga/${slug}?chapterPage=1&chapterLimit=1000`, {
+        headers: { 'User-Agent': this.config.userAgent },
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+
+      // Find the chapter in the list
+      const chapter = data.chapters?.find((ch: any) => String(ch.number) === chapterNumber);
+      if (chapter?.images && Array.isArray(chapter.images)) {
+        return chapter.images.map((img: any, index: number) => ({
+          url: typeof img === 'string' ? img : img.url,
+          page: index + 1,
+        }));
+      }
+
+      // Try fetching chapter directly
+      if (chapter?.id) {
+        const chapterResponse = await fetch(`${this.apiBase}/chapters/${chapter.id}`, {
+          headers: { 'User-Agent': this.config.userAgent },
+        });
+        if (chapterResponse.ok) {
+          const chapterData = await chapterResponse.json();
+          const images = chapterData.images || chapterData.chapter?.images || [];
+          return images.map((img: any, index: number) => ({
+            url: typeof img === 'string' ? img : img.url,
+            page: index + 1,
+          }));
+        }
+      }
+    } catch {
+      // Fallback to HTML parsing
+    }
+
+    // Fallback: fetch the chapter page and parse images
+    const html = await this.fetchWithRetry(chapterUrl);
+    const images: ChapterImage[] = [];
+    const imgPattern = /"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/gi;
+    let imgMatch;
+    const seenUrls = new Set<string>();
+    while ((imgMatch = imgPattern.exec(html)) !== null) {
+      const url = imgMatch[1];
+      if (!seenUrls.has(url) && !url.includes("logo") && !url.includes("icon") && !url.includes("avatar")) {
+        seenUrls.add(url);
+        images.push({ url, page: images.length + 1 });
+      }
+    }
+
+    return images;
   }
 }

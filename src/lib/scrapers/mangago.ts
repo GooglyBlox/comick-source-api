@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangagoScraper extends BaseScraper {
   private readonly BASE_URL = "https://www.mangago.zone";
@@ -167,5 +167,53 @@ export class MangagoScraper extends BaseScraper {
   protected override extractChapterNumber(chapterUrl: string): number {
     const match = chapterUrl.match(/\/chapter\/\d+\/(\d+)/);
     return match ? parseFloat(match[1]) : 0;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const images: ChapterImage[] = [];
+
+    // Try to find image array in JavaScript
+    const imgsMatch = html.match(/imgsrcs\s*=\s*(\[[\s\S]*?\]);/) ||
+                      html.match(/var\s+imgs\s*=\s*(\[[\s\S]*?\]);/);
+    if (imgsMatch) {
+      try {
+        const imgUrls: string[] = JSON.parse(imgsMatch[1].replace(/'/g, '"'));
+        for (const url of imgUrls) {
+          if (url && url.startsWith("http")) {
+            images.push({ url, page: images.length + 1 });
+          }
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    if (images.length > 0) return images;
+
+    // Fallback: parse img tags from the reader
+    const $ = cheerio.load(html);
+    $("#page1, #page2, #page3, .page-img, #viewer").find("img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && url.startsWith("http") && !url.includes("logo") && !url.includes("icon")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    if (images.length === 0) {
+      // Try all img tags with manga content URLs
+      $("img").each((_, el) => {
+        const url = $(el).attr("src")?.trim();
+        if (url && /\.(jpg|jpeg|png|webp)/i.test(url) && (url.includes("manga") || url.includes("chapter") || url.includes("comic")) && !url.includes("logo") && !url.includes("icon")) {
+          images.push({ url, page: images.length + 1 });
+        }
+      });
+    }
+
+    return images;
   }
 }

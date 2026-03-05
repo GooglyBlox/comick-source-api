@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class WritersScansScraper extends BaseScraper {
   private readonly BASE_URL = "https://writerscans.com";
@@ -96,6 +96,25 @@ export class WritersScansScraper extends BaseScraper {
     }
 
     return -1;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $("#pages img[uid]").each((_, el) => {
+      const uid = $(el).attr("uid")?.trim();
+      if (uid) {
+        images.push({ url: `https://cdn.meowing.org/uploads/${uid}`, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {

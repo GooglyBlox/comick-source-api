@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult } from "@/types";
 
 export class WeebCentralScraper extends BaseScraper {
   protected override async fetchWithRetry(url: string): Promise<string> {
@@ -124,6 +124,33 @@ export class WeebCentralScraper extends BaseScraper {
     });
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+
+    // Find the HTMX endpoint for images
+    const hxGet = $("[hx-get*='/images']").attr("hx-get");
+    if (!hxGet) return [];
+
+    const imagesUrl = hxGet.startsWith("http") ? hxGet : `https://weebcentral.com${hxGet}`;
+    const imagesHtml = await this.fetchWithRetry(imagesUrl);
+    const $images = cheerio.load(imagesHtml);
+    const images: ChapterImage[] = [];
+
+    $images("img[src]").each((_, el) => {
+      const url = $images(el).attr("src")?.trim();
+      if (url && url.startsWith("http")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 
   async search(query: string): Promise<SearchResult[]> {

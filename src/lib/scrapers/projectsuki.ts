@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class ProjectSukiScraper extends BaseScraper {
   private readonly BASE_URL = "https://projectsuki.com";
@@ -169,5 +169,34 @@ export class ProjectSukiScraper extends BaseScraper {
   protected override extractChapterNumber(chapterUrl: string): number {
     const match = chapterUrl.match(/\/read\/\d+\/(\d+)/);
     return match ? parseFloat(match[1]) : 0;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $(".page-container img, .reader-area img, #reader img, .chapter-pages img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && !url.includes("loading") && !url.includes("placeholder") && !url.includes("logo") && !url.includes("icon")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    if (images.length === 0) {
+      // Fallback: find all large images that look like manga pages
+      $("img").each((_, el) => {
+        const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+        if (url && /\.(jpg|jpeg|png|webp)/i.test(url) && !url.includes("logo") && !url.includes("icon") && !url.includes("avatar") && !url.includes("banner")) {
+          images.push({ url, page: images.length + 1 });
+        }
+      });
+    }
+
+    return images;
   }
 }

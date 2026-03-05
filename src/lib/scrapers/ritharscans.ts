@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class RitharscansScraper extends BaseScraper {
   private readonly BASE_URL = "https://ritharscans.com";
@@ -211,5 +211,37 @@ export class RitharscansScraper extends BaseScraper {
     }
 
     return results;
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $("img").each((_, el) => {
+      const src = $(el).attr("src") || $(el).attr("data-src");
+      if (src && /chapter|page|(\d+)\.(jpg|jpeg|png|webp)/i.test(src) && !src.includes("logo") && !src.includes("icon") && !src.includes("avatar")) {
+        images.push({ url: src, page: images.length + 1 });
+      }
+    });
+
+    if (images.length > 0) return images;
+
+    const imagePattern = /\{"order"\s*:\s*(\d+)\s*,\s*"url"\s*:\s*"([^"]+)"\}/g;
+    let match;
+    while ((match = imagePattern.exec(html)) !== null) {
+      images.push({ url: match[2], page: parseInt(match[1]) + 1 });
+    }
+
+    if (images.length > 0) {
+      images.sort((a, b) => a.page - b.page);
+      return images.map((img, index) => ({ ...img, page: index + 1 }));
+    }
+
+    return images;
   }
 }

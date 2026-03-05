@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class KuramangaScraper extends BaseScraper {
   private readonly BASE_URL = "https://kuramanga.com";
@@ -202,5 +202,45 @@ export class KuramangaScraper extends BaseScraper {
       console.error("[KuraManga] Search error:", error);
       throw error;
     }
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    // Try to find image URLs in JavaScript variables
+    const scripts = $("script");
+    scripts.each((_, element) => {
+      const scriptContent = $(element).html() || "";
+      // Look for image array patterns like: window.CHAPTER_IMAGES = ["url1", "url2"]
+      const imagesMatch = scriptContent.match(/(?:window\.CHAPTER_IMAGES|chapterImages|chapter_images)\s*=\s*(\[[\s\S]*?\]);/);
+      if (imagesMatch) {
+        try {
+          const imgUrls: string[] = JSON.parse(imagesMatch[1]);
+          for (const url of imgUrls) {
+            images.push({ url, page: images.length + 1 });
+          }
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    });
+
+    if (images.length > 0) return images;
+
+    // Fallback: parse img tags from reader area
+    $("#readerarea img, .reading-content img, .chapter-content img, .chapter-reader img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && !url.includes("loading") && !url.includes("placeholder") && !url.includes("logo")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 }

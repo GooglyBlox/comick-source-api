@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class KaliScanScraper extends BaseScraper {
   private readonly BASE_URL = "https://kaliscan.com";
@@ -94,6 +94,26 @@ export class KaliScanScraper extends BaseScraper {
     }
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const match = html.match(/var\s+chapImages\s*=\s*"([^"]+)"/);
+
+    if (!match) {
+      console.error("[KaliScan] Could not find chapImages in page HTML");
+      return [];
+    }
+
+    return match[1]
+      .split(",")
+      .map((u) => u.trim())
+      .filter((u) => u.length > 0)
+      .map((url, index) => ({ url, page: index + 1 }));
   }
 
   protected override extractChapterNumber(chapterUrl: string): number {

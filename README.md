@@ -87,6 +87,7 @@ npm run dev
 Runs on http://localhost:3000
 
 **Production:**
+
 ```bash
 npm run build
 npm start
@@ -131,6 +132,17 @@ Get chapter list for a manga.
 ```json
 {
   "url": "https://mangapark.io/title/75577-en-solo-leveling",
+  "source": "mangapark"  // optional, auto-detected
+}
+```
+
+### POST /api/pages
+
+Get chapter page images
+
+```json
+{
+  "url": "https://kaliscan.me/manga/62786-lying-puppies-get-eaten/chapter-1",
   "source": "mangapark"  // optional, auto-detected
 }
 ```
@@ -183,6 +195,7 @@ Fetch frontpage section data from a source.
 ```
 
 **Available sections for Comix:**
+
 - `trending` - Most Recent Popular (supports time filter)
 - `most_followed` - Most Followed New Comics (supports time filter)
 - `latest_hot` - Latest Updates (Hot)
@@ -194,7 +207,7 @@ Fetch frontpage section data from a source.
 
 Proxy requests to AsuraScans and WeebCentral (CORS workaround).
 
-```
+```txt
 GET /api/proxy/html?url=https://asuracomic.net/...
 ```
 

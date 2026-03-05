@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class PhiliascansScraper extends BaseScraper {
   private readonly BASE_URL = "https://philiascans.org";
@@ -264,5 +264,24 @@ export class PhiliascansScraper extends BaseScraper {
       console.error("[Philia Scans] Search error:", error);
       throw error;
     }
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    $(".reading-content .page-break img, .reading-content img.wp-manga-chapter-img").each((_, el) => {
+      const url = $(el).attr("data-src")?.trim() || $(el).attr("src")?.trim();
+      if (url && !url.includes("loading") && !url.includes("placeholder")) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 }

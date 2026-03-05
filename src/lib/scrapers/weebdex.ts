@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseScraper } from './base';
-import { ScrapedChapter, SearchResult, SourceType } from '@/types';
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from '@/types';
 
 export class WeebdexScraper extends BaseScraper {
   private readonly baseUrl = 'https://weebdex.org';
@@ -127,6 +127,25 @@ export class WeebdexScraper extends BaseScraper {
     }
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const match = chapterUrl.match(/\/chapter\/([^/?]+)/);
+    if (!match) return [];
+
+    const chapterId = match[1];
+    const data = await this.fetchApi(`${this.apiBase}/chapter/${chapterId}`);
+    const node = data.node;
+    const files: string[] = data.data_optimized || data.data || [];
+
+    return files.map((filename, index) => ({
+      url: `${node}/data/${chapterId}/${filename}`,
+      page: index + 1,
+    }));
   }
 
   private async getEnglishChapterCount(mangaId: string): Promise<number> {

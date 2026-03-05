@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangaKatanaScraper extends BaseScraper {
   private readonly BASE_URL = "https://mangakatana.com";
@@ -122,6 +122,23 @@ export class MangaKatanaScraper extends BaseScraper {
     });
 
     return chapters.sort((a, b) => a.number - b.number);
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const match = html.match(/var\s+(?:thzq|ytaw)\s*=\s*\[([^\]]+)\]/);
+    if (!match) return [];
+
+    const urls = match[1]
+      .split(",")
+      .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
+      .filter((u) => u.startsWith("http"));
+
+    return urls.map((url, index) => ({ url, page: index + 1 }));
   }
 
   protected override extractChapterNumber(chapterUrl: string): number {

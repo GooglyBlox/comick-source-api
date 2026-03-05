@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
-import { ScrapedChapter, SearchResult, SourceType } from "@/types";
+import { ChapterImage, ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class FlameComicsScraper extends BaseScraper {
   private readonly BASE_URL = "https://flamecomics.xyz";
@@ -127,6 +127,44 @@ export class FlameComicsScraper extends BaseScraper {
       console.error("FlameComics search error:", error);
       throw error;
     }
+  }
+
+  override supportsChapterImages(): boolean {
+    return true;
+  }
+
+  async getChapterImages(chapterUrl: string): Promise<ChapterImage[]> {
+    const html = await this.fetchWithRetry(chapterUrl);
+    const $ = cheerio.load(html);
+    const images: ChapterImage[] = [];
+
+    // Try __NEXT_DATA__ first
+    const nextDataScript = $("#__NEXT_DATA__").html();
+    if (nextDataScript) {
+      try {
+        const data = JSON.parse(nextDataScript);
+        const chapter = data.props?.pageProps?.chapter;
+        if (chapter?.images) {
+          const seriesId = data.props?.pageProps?.series?.id || "";
+          const chapterHash = chapter.hash || chapter.id || "";
+          const imageEntries = Object.values(chapter.images) as { name: string }[];
+          return imageEntries.map((img, index) => ({
+            url: `${this.CDN_URL}/uploads/images/series/${seriesId}/${chapterHash}/${img.name}`,
+            page: index + 1,
+          }));
+        }
+      } catch {}
+    }
+
+    // Fallback: direct img tags
+    $("img[src*='cdn.flamecomics']").each((_, el) => {
+      const url = $(el).attr("src")?.trim();
+      if (url) {
+        images.push({ url, page: images.length + 1 });
+      }
+    });
+
+    return images;
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
