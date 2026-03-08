@@ -15,13 +15,13 @@ Next.js API for scraping manga metadata from multiple sources.
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
-| Diva Scans         | `diva-scans`         | https://divatoon.com        | Active   |
+| Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
-| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Unstable |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
