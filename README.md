@@ -19,7 +19,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
-| Firescans          | `firescans`          | https://firescans.xyz       | Unstable |
+| Firescans          | `firescans`          | https://firescans.xyz       | Active   |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
@@ -32,7 +32,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
 | LagoonScans        | `lagoonscans`        | https://lagoonscans.com     | Active   |
 | LHTranslation      | `lhtranslation`      | https://lhtranslation.net   | Active   |
-| LikeManga          | `likemanga`          | https://likemanga.io        | Active   |
+| LikeManga          | `likemanga`          | https://likemanga.io        | Unstable |
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
 | Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
@@ -44,12 +44,12 @@ Next.js API for scraping manga metadata from multiple sources.
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
-| MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
+| MangaYY            | `mangayy`            | https://mangayy.org         | Unstable |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
-| NovelCool          | `novelcool`          | https://www.novelcool.com   | Active   |
+| NovelCool          | `novelcool`          | https://www.novelcool.com   | Unstable |
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Active   |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qiscans.org         | Unstable |
