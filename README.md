@@ -16,7 +16,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
 | Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
-| Elf Toon           | `elf-toon`           | https://elftoon.com         | Unstable |
+| Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
@@ -34,7 +34,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | LHTranslation      | `lhtranslation`      | https://lhtranslation.net   | Active   |
 | LikeManga          | `likemanga`          | https://likemanga.io        | Active   |
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
-| Madarascans        | `madarascans`        | https://madarascans.com     | Unstable |
+| Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Active   |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
@@ -62,10 +62,10 @@ Next.js API for scraping manga metadata from multiple sources.
 | Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Unstable |
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
 | Temple Scan        | `temple-scan`        | https://templetoons.com     | Active   |
-| Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Unstable |
+| Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Active   |
 | TopManhua          | `topmanhua`          | https://manhuatop.org       | Active   |
 | UTOON              | `utoon`              | https://utoon.net           | Active   |
-| Violetscans        | `violetscans`        | https://violetscans.org     | Unstable |
+| Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
 | WEBTOON            | `webtoon`            | https://www.webtoons.com    | Active   |
 | WeebCentral        | `weebcentral`        | https://weebcentral.com     | Active   |
