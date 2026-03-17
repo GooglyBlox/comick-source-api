@@ -59,7 +59,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com    | Active   |
-| Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Unstable |
+| Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Active   |
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
 | Temple Scan        | `temple-scan`        | https://templetoons.com     | Active   |
 | Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Unstable |
