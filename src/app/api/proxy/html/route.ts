@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Only allow AsuraScans and WeebCentral URLs
     const isAsuraScanDomain =
-      /https?:\/\/(www\.)?asuracomic\.net/.test(decodedUrl);
+      /https?:\/\/(www\.)?(asuracomic\.net|asurascans\.com)/.test(decodedUrl);
     const isWeebCentralDomain =
       /https?:\/\/(www\.)?weebcentral\.com/.test(decodedUrl);
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     // Set referer based on the domain
     const referer = isWeebCentralDomain
       ? "https://weebcentral.com/"
-      : "https://asuracomic.net/";
+      : "https://asurascans.com/";
 
     const response = await fetch(decodedUrl, {
       headers: {

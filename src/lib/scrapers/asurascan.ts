@@ -4,7 +4,7 @@ import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class AsuraScanScraper extends BaseScraper {
-  private readonly BASE_URL = "https://asuracomic.net";
+  private readonly BASE_URL = "https://asurascans.com";
 
   protected override async fetchWithRetry(url: string): Promise<string> {
     // Direct fetch with proper headers (works in edge runtime)
@@ -17,7 +17,7 @@ export class AsuraScanScraper extends BaseScraper {
           "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5",
         "Accept-Encoding": "gzip, deflate, br",
-        Referer: "https://asuracomic.net/",
+        Referer: "https://asurascans.com/",
         DNT: "1",
         Connection: "keep-alive",
         "Upgrade-Insecure-Requests": "1",
@@ -45,7 +45,7 @@ export class AsuraScanScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("asuracomic.net");
+    return url.includes("asurascans.com") || url.includes("asuracomic.net");
   }
 
   isClientOnly(): boolean {
@@ -57,40 +57,43 @@ export class AsuraScanScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.BASE_URL}/series?page=1&name=${encodeURIComponent(query)}`;
+    const searchUrl = `${this.BASE_URL}/browse?search=${encodeURIComponent(query)}`;
     const html = await this.fetchWithRetry(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
 
-    $('a[href^="series/"]').each((_, element) => {
-      const $item = $(element);
-      const href = $item.attr("href");
+    $(".series-card").each((_, element) => {
+      const $card = $(element);
 
+      const $link = $card.find('a[href^="/comics/"]').first();
+      const href = $link.attr("href");
       if (!href) return;
 
-      const slugMatch = href.match(/series\/([^/?]+)/);
+      const slugMatch = href.match(/\/comics\/([^/?]+)/);
       const id = slugMatch ? slugMatch[1] : "";
 
-      const titleSpan = $item
-        .find("span.block.text-\\[13\\.3px\\].font-bold")
-        .first();
-      const title = titleSpan.text().trim();
-
+      const title = $card.find("h3").first().text().trim();
       if (!title) return;
 
-      const coverImg = $item.find("img").first();
+      const coverImg = $card.find("img").first();
       const coverImage = coverImg.attr("src") || coverImg.attr("data-src");
 
-      const chapterSpan = $item
-        .find("span.text-\\[13px\\].text-\\[\\#999\\]")
-        .first();
-      const chapterText = chapterSpan.text().trim();
-      const chapterMatch = chapterText.match(/Chapter\s+([\d.]+)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
+      const chapterSpans = $card.find("span.text-xs.font-medium");
+      let latestChapter = 0;
+      chapterSpans.each((_, span) => {
+        const text = $(span).text().trim();
+        const chapterMatch = text.match(/^(\d+)\s+(Chs\.|Chapters?)$/i);
+        if (chapterMatch) {
+          latestChapter = parseInt(chapterMatch[1], 10);
+        }
+      });
 
-      const fullUrl = href.startsWith("http")
-        ? href
-        : `${this.BASE_URL}/${href}`;
+      const ratingSpan = $card.find("span.text-\\[10px\\]").first();
+      const rating = ratingSpan.length
+        ? parseFloat(ratingSpan.text().trim())
+        : undefined;
+
+      const fullUrl = `${this.BASE_URL}${href}`;
 
       results.push({
         id,
@@ -103,6 +106,7 @@ export class AsuraScanScraper extends BaseScraper {
             : undefined,
         latestChapter,
         lastUpdated: "",
+        rating,
       });
     });
 
@@ -128,7 +132,7 @@ export class AsuraScanScraper extends BaseScraper {
       title = pageTitle.split(" - ")[0].split("|")[0].trim();
     }
 
-    const urlMatch = url.match(/\/series\/([^/?]+)/);
+    const urlMatch = url.match(/\/(?:comics|series)\/([^/?]+)/);
     const id = urlMatch ? urlMatch[1] : Date.now().toString();
 
     return { title, id };
@@ -150,15 +154,9 @@ export class AsuraScanScraper extends BaseScraper {
         return;
       }
 
-      const hasPremiumIndicator =
-        $link.find("clipPath#clip0_568_418").length > 0 ||
-        $link.find('circle[fill="#913FE2"]').length > 0;
-
-      if (hasPremiumIndicator) {
-        return;
-      }
-
-      const chapterText = $link.find("h3").first().text().trim();
+      const chapterText =
+        $link.find("span.font-medium").first().text().trim() ||
+        $link.find("h3").first().text().trim();
 
       href = href.trim();
 
@@ -168,7 +166,7 @@ export class AsuraScanScraper extends BaseScraper {
       } else if (href.startsWith("/")) {
         fullUrl = `${this.BASE_URL}${href}`;
       } else {
-        fullUrl = `${this.BASE_URL}/series/${href}`;
+        fullUrl = `${this.BASE_URL}/comics/${href}`;
       }
 
       const chapterNumber = this.extractChapterNumber(fullUrl, chapterText);
