@@ -9,13 +9,13 @@ Next.js API for scraping manga metadata from multiple sources.
 | Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Active   |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
-| AsuraScan          | `asurascan`          | https://asuracomic.net      | Active   |
+| AsuraScan          | `asurascan`          | https://asuracomic.net      | Unstable |
 | Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
-| Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
+| Diva Scans         | `diva-scans`         | https://divatoon.com        | Active   |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
