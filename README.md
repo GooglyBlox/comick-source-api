@@ -9,7 +9,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Active   |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
-| AsuraScan          | `asurascan`          | https://asuracomic.net      | Unstable |
+| AsuraScan          | `asurascan`          | https://asurascans.com      | Unstable |
 | Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
@@ -195,7 +195,7 @@ Fetch frontpage section data from a source.
 Proxy requests to AsuraScans and WeebCentral (CORS workaround).
 
 ```
-GET /api/proxy/html?url=https://asuracomic.net/...
+GET /api/proxy/html?url=https://asurascans.com/...
 ```
 
 ## Usage
