@@ -29,8 +29,8 @@ interface QiScansPost {
 }
 
 export class QiScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://qiscans.org";
-  private readonly API_URL = "https://api.qiscans.org";
+  private readonly BASE_URL = "https://qimanhwa.com";
+  private readonly API_URL = "https://api.qimanhwa.com";
 
   getName(): string {
     return "Qi Scans";
@@ -41,7 +41,7 @@ export class QiScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("qiscans.org");
+    return url.includes("qiscans.org") || url.includes("qimanhwa.com");
   }
 
   getType(): SourceType {
