@@ -32,6 +32,7 @@ interface AtsuMoeChaptersResponse {
 
 export class AtsuMoeScraper extends BaseScraper {
   private readonly BASE_URL = "https://atsu.moe";
+  private readonly ATSU_ID_PATTERN = "[a-zA-Z0-9_-]+";
 
   getName(): string {
     return "AtsuMoe";
@@ -46,12 +47,12 @@ export class AtsuMoeScraper extends BaseScraper {
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
-    const urlMatch = url.match(/\/manga\/([a-zA-Z0-9]+)/);
-    if (!urlMatch) {
+    const mangaId = this.extractMangaId(url);
+    if (!mangaId) {
       throw new Error("Invalid atsu.moe manga URL");
     }
 
-    const id = urlMatch[1];
+    const id = mangaId;
     const chaptersUrl = `${this.BASE_URL}/api/manga/chapters?id=${id}&filter=all&sort=desc&page=0`;
     const response = await fetch(chaptersUrl);
 
@@ -188,5 +189,21 @@ export class AtsuMoeScraper extends BaseScraper {
     if (diffHours > 0) return `${diffHours}h ago`;
     if (diffMins > 0) return `${diffMins}m ago`;
     return "just now";
+  }
+
+  private extractMangaId(url: string): string | null {
+    const mangaMatch = url.match(new RegExp(`/manga/(${this.ATSU_ID_PATTERN})`));
+    if (mangaMatch) {
+      return mangaMatch[1];
+    }
+
+    const readMatch = url.match(
+      new RegExp(`/read/(${this.ATSU_ID_PATTERN})/(${this.ATSU_ID_PATTERN})`),
+    );
+    if (readMatch) {
+      return readMatch[1];
+    }
+
+    return null;
   }
 }
