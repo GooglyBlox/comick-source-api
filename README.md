@@ -10,7 +10,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Active   |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
-| Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
+| Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Unstable |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Active   |
@@ -21,7 +21,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Active   |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
-| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Unstable |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
@@ -43,9 +43,9 @@ Next.js API for scraping manga metadata from multiple sources.
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
-| Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
+| Mangataro          | `mangataro`          | https://mangataro.org       | Unstable |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Unstable |
-| Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Unstable |
+| Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
@@ -56,7 +56,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
 | Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | RD Scans           | `rd-scans`           | https://rdscans.com         | Active   |
-| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Unstable |
+| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com    | Active   |
 | Scythe Scans       | `scythe-scans`       | https://scythescans.com     | Active   |
