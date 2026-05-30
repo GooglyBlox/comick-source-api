@@ -6,7 +6,7 @@ Next.js API for scraping manga metadata from multiple sources.
 
 | Source             | ID                   | Base URL                    | Status   |
 | ------------------ | -------------------- | --------------------------- | -------- |
-| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
+| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Unstable |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Active   |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
@@ -15,7 +15,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
-| Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
+| Diva Scans         | `diva-scans`         | https://divatoon.com        | Active   |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
@@ -54,7 +54,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qimanhwa.com        | Unstable |
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
-| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Unstable |
+| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | RD Scans           | `rd-scans`           | https://rdscans.com         | Active   |
 | Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
