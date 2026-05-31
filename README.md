@@ -34,7 +34,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | LHTranslation      | `lhtranslation`      | https://lhtranslation.net   | Active   |
 | LikeManga          | `likemanga`          | https://likemanga.io        | Active   |
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
-| Madarascans        | `madarascans`        | https://madarascans.com     | Unstable |
+| Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Unstable |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
@@ -63,7 +63,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Spider Scans       | `spider-scans`       | https://spiderscans.xyz     | Unstable |
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
 | Temple Scan        | `temple-scan`        | https://templetoons.com     | Active   |
-| Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Unstable |
+| Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Active   |
 | TopManhua          | `topmanhua`          | https://manhuatop.org       | Active   |
 | UTOON              | `utoon`              | https://utoon.net           | Unstable |
 | Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
