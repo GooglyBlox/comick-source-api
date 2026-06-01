@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getScraperByName, getAllScrapers } from "@/lib/scrapers";
 import { BaseScraper } from "@/lib/scrapers/base";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const SCRAPER_TIMEOUT_MS = 20000;
 
