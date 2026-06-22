@@ -14,7 +14,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Unstable |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
-| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
+| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Unstable |
 | Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
@@ -24,9 +24,9 @@ Next.js API for scraping manga metadata from multiple sources.
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
-| KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
+| KaliScan           | `kaliscan`           | https://kaliscan.com        | Unstable |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
@@ -37,7 +37,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Madarascans        | `madarascans`        | https://madarascans.com     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Unstable |
-| Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
+| Mangago            | `mangago`            | https://www.mangago.zone    | Unstable |
 | MangaKatana        | `mangakatana`        | https://mangakatana.com     | Active   |
 | Mangaloom          | `mangaloom`          | https://mangaloom.com       | Active   |
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
@@ -49,14 +49,14 @@ Next.js API for scraping manga metadata from multiple sources.
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
-| NovelCool          | `novelcool`          | https://www.novelcool.com   | Active   |
+| NovelCool          | `novelcool`          | https://www.novelcool.com   | Unstable |
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Unstable |
-| Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
+| Project Suki       | `project-suki`       | https://projectsuki.com     | Unstable |
 | Qi Scans           | `qi-scans`           | https://qimanhwa.com        | Unstable |
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
 | Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | RD Scans           | `rd-scans`           | https://rdscans.com         | Active   |
-| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
+| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Unstable |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com    | Active   |
 | Scythe Scans       | `scythe-scans`       | https://scythescans.com     | Active   |
