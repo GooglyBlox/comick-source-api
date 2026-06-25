@@ -3,6 +3,22 @@ import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
+interface GreedSearchItem {
+  ID: number;
+  post_title: string;
+  post_link: string;
+  post_image: string;
+  post_latest?: string;
+}
+
+interface GreedSearchGroup {
+  all?: GreedSearchItem[];
+}
+
+interface GreedSearchResponse {
+  series: GreedSearchGroup[];
+}
+
 export class GreedScansScraper extends BaseScraper {
   private readonly BASE_URL = "https://greedscans.com";
 
@@ -15,7 +31,7 @@ export class GreedScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("greedscans.com");
+    return url.includes("greedscans.com") || url.includes("greedscans.org");
   }
 
   getType(): SourceType {
@@ -111,48 +127,48 @@ export class GreedScansScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.BASE_URL}/?s=${encodeURIComponent(query)}`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
-    const results: SearchResult[] = [];
+    // The themesia "?s=" search page renders results client-side, so the SSR
+    // HTML has only a "search-no-results" state. Use the theme's live
+    // autocomplete endpoint (admin-ajax ts_ac_do_search) which returns JSON.
+    const params = new URLSearchParams({
+      action: "ts_ac_do_search",
+      ts_ac_query: query,
+    });
+    const apiUrl = `${this.BASE_URL}/wp-admin/admin-ajax.php?${params.toString()}`;
 
-    $(".bsx").each((_, element) => {
-      const $item = $(element);
-
-      const titleLink = $item.find("a").first();
-      const url = titleLink.attr("href");
-      const title = $item.find(".tt").text().trim();
-
-      if (!url) return;
-
-      const slugMatch = url.match(/\/manga\/([^/]+)/);
-      const id = slugMatch ? slugMatch[1] : "";
-
-      const coverImg = $item.find("img").first();
-      const coverImage = coverImg.attr("src");
-
-      const latestChapterText = $item.find(".epxs").text().trim();
-      const chapterMatch = latestChapterText.match(/Chapter\s+([\d.]+)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
-
-      const ratingText = $item.find(".numscore").text().trim();
-      const rating = ratingText ? parseFloat(ratingText) : undefined;
-
-      results.push({
-        id,
-        title,
-        url,
-        coverImage: coverImage?.startsWith("http")
-          ? coverImage
-          : coverImage
-            ? `${this.BASE_URL}${coverImage}`
-            : undefined,
-        latestChapter,
-        lastUpdated: "",
-        rating,
-      });
+    const response = await fetch(apiUrl, {
+      headers: {
+        "User-Agent": this.config.userAgent,
+        Accept: "application/json, text/plain, */*",
+        "X-Requested-With": "XMLHttpRequest",
+        Referer: `${this.BASE_URL}/`,
+      },
     });
 
-    return results;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data: GreedSearchResponse = await response.json();
+    const items: GreedSearchItem[] = (data.series || []).flatMap(
+      (group) => group.all || []
+    );
+
+    return items.slice(0, 5).map((item) => {
+      const slugMatch = item.post_link.match(/\/manga\/([^/]+)/);
+      const id = slugMatch ? slugMatch[1] : item.ID.toString();
+
+      const latestMatch = item.post_latest?.match(/(\d+(?:\.\d+)?)/);
+      const latestChapter = latestMatch ? parseFloat(latestMatch[1]) : 0;
+
+      return {
+        id,
+        title: item.post_title,
+        url: item.post_link,
+        coverImage: item.post_image || undefined,
+        latestChapter,
+        lastUpdated: "",
+      };
+    });
   }
 }
