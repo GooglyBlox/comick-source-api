@@ -24,7 +24,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Active   |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
-| KaliScan           | `kaliscan`           | https://kaliscan.com        | Active   |
+| KaliScan           | `kaliscan`           | https://kaliscan.com        | Unstable |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Unstable |
 | KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
@@ -43,7 +43,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
-| Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
+| Mangataro          | `mangataro`          | https://mangataro.org       | Unstable |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
