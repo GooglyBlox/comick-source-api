@@ -4,7 +4,7 @@ import { ScrapedChapter, SearchResult, SourceType } from '@/types';
 
 export class ComixScraper extends BaseScraper {
   private readonly baseUrl = 'https://comix.to';
-  private readonly apiBase = 'https://comix.to/api/v2';
+  private readonly apiBase = 'https://comix.to/api/v1';
 
   getName(): string {
     return 'Comix';
@@ -75,7 +75,8 @@ export class ComixScraper extends BaseScraper {
 
       while (hasMorePages) {
         const response = await fetch(
-          `${this.apiBase}/manga/${hashId}/chapters?order[number]=desc&limit=100&page=${currentPage}`
+          `${this.apiBase}/manga/${hashId}/chapters?sort=desc&limit=100&page=${currentPage}&lang=`,
+          { headers: { "User-Agent": this.config.userAgent, Accept: "application/json" } }
         );
 
         if (!response.ok) {
@@ -135,11 +136,14 @@ export class ComixScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.apiBase}/manga?order[relevance]=desc&keyword=${encodeURIComponent(query)}&limit=5`;
+    // Comix migrated its API to /api/v1; search is the manga list filtered by keyword.
+    const searchUrl = `${this.apiBase}/manga?keyword=${encodeURIComponent(query)}&limit=5&content_rating=suggestive`;
     const results: SearchResult[] = [];
 
     try {
-      const response = await fetch(searchUrl);
+      const response = await fetch(searchUrl, {
+        headers: { "User-Agent": this.config.userAgent, Accept: "application/json" },
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -148,31 +152,28 @@ export class ComixScraper extends BaseScraper {
       const data = await response.json();
 
       if (data.result?.items && Array.isArray(data.result.items)) {
+        const seenIds = new Set<string>();
         for (const manga of data.result.items) {
-          let coverImage: string | undefined;
-          if (manga.poster?.large) {
-            coverImage = manga.poster.large;
-          } else if (manga.poster?.medium) {
-            coverImage = manga.poster.medium;
-          }
+          if (results.length >= 5) break;
+          if (!manga.hid || seenIds.has(manga.hid)) continue;
+          seenIds.add(manga.hid);
 
-          let lastUpdated = '';
-          let lastUpdatedTimestamp: number | undefined;
-          if (manga.chapter_updated_at) {
-            lastUpdatedTimestamp = manga.chapter_updated_at * 1000;
-            lastUpdated = new Date(lastUpdatedTimestamp).toLocaleDateString();
-          }
+          const coverImage =
+            manga.poster?.large || manga.poster?.medium || undefined;
+
+          const url = manga.url
+            ? (manga.url.startsWith("http") ? manga.url : `${this.baseUrl}${manga.url}`)
+            : `${this.baseUrl}/title/${manga.hid}`;
 
           results.push({
-            id: manga.hash_id,
+            id: manga.hid,
             title: manga.title,
-            url: `${this.baseUrl}/title/${manga.hash_id}-${manga.slug}`,
+            url,
             coverImage,
-            latestChapter: manga.latest_chapter || 0,
-            lastUpdated,
-            lastUpdatedTimestamp,
-            rating: manga.rated_avg,
-            followers: manga.follows_total?.toString()
+            latestChapter: manga.latestChapter || 0,
+            lastUpdated: manga.chapterUpdatedAtFormatted || "",
+            rating: manga.ratedAvg,
+            followers: manga.followsTotal?.toString(),
           });
         }
       }

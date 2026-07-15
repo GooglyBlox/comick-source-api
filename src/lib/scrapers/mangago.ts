@@ -4,7 +4,7 @@ import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangagoScraper extends BaseScraper {
   private readonly BASE_URL = "https://www.mangago.zone";
-  private readonly SEARCH_URL = "https://www.mangago.me";
+  private readonly SEARCH_URL = "https://www.mangago.zone";
 
   getName(): string {
     return "Mangago";

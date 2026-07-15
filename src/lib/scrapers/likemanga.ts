@@ -9,11 +9,11 @@ export class LikeMangaScraper extends BaseScraper {
   }
 
   getBaseUrl(): string {
-    return "https://likemanga.in";
+    return "https://mgread.io";
   }
 
   canHandle(url: string): boolean {
-    return url.includes("likemanga.in");
+    return url.includes("likemanga.in") || url.includes("mgread.io");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -63,7 +63,7 @@ export class LikeMangaScraper extends BaseScraper {
         if (href) {
           const fullUrl = href.startsWith("http")
             ? href
-            : `https://likemanga.in${href}`;
+            : `https://mgread.io${href}`;
           const chapterNumber = this.extractChapterNumber(fullUrl, chapterText);
 
           if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
@@ -120,53 +120,42 @@ export class LikeMangaScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `https://likemanga.in/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
+    // likemanga.in rebranded to mgread.io (UIkit theme); results are <article> cards.
+    const searchUrl = `https://mgread.io/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
     const html = await this.fetchWithRetry(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
 
-    $(".c-tabs-item__content").each((_, element) => {
+    $("article.uk-grid-small").each((_, element) => {
       const $item = $(element);
 
-      const titleLink = $item.find(".post-title a").first();
+      const titleLink = $item.find("a.uk-link-heading").first();
       const url = titleLink.attr("href");
       const title = titleLink.text().trim();
 
-      if (!url) return;
+      if (!url || !title) return;
+      if (!/\/manga\//.test(url)) return;
 
       const slugMatch = url.match(/\/manga\/([^/]+)/);
       const id = slugMatch ? slugMatch[1] : "";
 
-      const coverImg = $item.find(".tab-thumb img").first();
+      const coverImg = $item.find("img.wp-post-image").first();
       const coverImage = coverImg.attr("src") || coverImg.attr("data-src");
-
-      const latestChapterLink = $item.find(".latest-chap a").first();
-      const latestChapterText = latestChapterLink.text().trim();
-      const chapterMatch = latestChapterText.match(/Chapter\s+([\d.]+)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
-
-      const lastUpdatedSpan = $item.find(".post-on span, .post-on").first();
-      const lastUpdated = lastUpdatedSpan.text().trim();
-
-      const ratingSpan = $item.find(".total_votes").first();
-      const rating =
-        ratingSpan.length > 0
-          ? parseFloat(ratingSpan.text().trim())
-          : undefined;
 
       results.push({
         id,
         title,
-        url,
+        url: url.startsWith("http") ? url : `https://mgread.io${url}`,
         coverImage: coverImage?.startsWith("http")
           ? coverImage
-          : `https://likemanga.in${coverImage}`,
-        latestChapter,
-        lastUpdated,
-        rating,
+          : coverImage
+            ? `https://mgread.io${coverImage}`
+            : undefined,
+        latestChapter: 0,
+        lastUpdated: "",
       });
     });
 
-    return results;
+    return results.slice(0, 5);
   }
 }
