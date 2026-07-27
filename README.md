@@ -14,7 +14,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Unstable |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
-| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Unstable |
+| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
 | Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
@@ -56,7 +56,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
 | Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
 | RD Scans           | `rd-scans`           | https://rdscans.com         | Active   |
-| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
+| Ritharscans        | `ritharscans`        | https://ritharscans.com     | Unstable |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com    | Active   |
 | Scythe Scans       | `scythe-scans`       | https://scythescans.com     | Active   |
