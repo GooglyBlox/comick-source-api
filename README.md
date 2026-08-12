@@ -14,7 +14,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Unstable |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
-| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
+| DemonicScans       | `demonicscans`       | https://demonicscans.org    | Unstable |
 | Diva Scans         | `diva-scans`         | https://divatoon.com        | Unstable |
 | Elf Toon           | `elf-toon`           | https://elftoon.com         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.org        | Active   |
@@ -69,7 +69,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
 | WEBTOON            | `webtoon`            | https://www.webtoons.com    | Active   |
-| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Active   |
+| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Unstable |
 | Weebdex            | `weebdex`            | https://weebdex.org         | Shutdown |
 | WitchScans         | `witchscans`         | https://witchscans.com      | Active   |
 | Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
