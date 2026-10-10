@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllScrapers } from "@/lib/scrapers";
+import { SHUTDOWN_SOURCE_IDS } from "@/lib/shutdown-sources";
 import {
   checkAllSourcesHealth,
   SourceHealthResult,
@@ -27,8 +28,13 @@ export async function GET() {
       });
     }
 
-    // Check health of all sources
-    const scrapers = getAllScrapers();
+    // Check health of all active sources
+    const scrapers = getAllScrapers().filter(
+      (scraper) =>
+        !SHUTDOWN_SOURCE_IDS.has(
+          scraper.getName().toLowerCase().replace(/\s+/g, "-"),
+        ),
+    );
     const healthMap = await checkAllSourcesHealth(scrapers);
 
     // Convert Map to object for JSON serialization

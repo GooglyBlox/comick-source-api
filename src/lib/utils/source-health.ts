@@ -8,6 +8,7 @@ export enum SourceStatus {
 }
 
 const HEALTH_CHECK_TIMEOUT_MS = 15000;
+const ALL_SOURCES_TIMEOUT_MS = 20000;
 
 export interface SourceHealthResult {
   status: SourceStatus;
@@ -174,14 +175,38 @@ export async function checkAllSourcesHealth(
   scrapers: BaseScraper[],
 ): Promise<Map<string, SourceHealthResult>> {
   const results = new Map<string, SourceHealthResult>();
+  const getSourceName = (scraper: BaseScraper) =>
+    scraper.getName().toLowerCase().replace(/\s+/g, "-");
 
-  await Promise.all(
-    scrapers.map(async (scraper) => {
-      const sourceName = scraper.getName().toLowerCase().replace(/\s+/g, "-");
-      const health = await checkSourceHealth(scraper);
-      results.set(sourceName, health);
-    }),
-  );
+  let deadlineId: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<void>((resolve) => {
+    deadlineId = setTimeout(resolve, ALL_SOURCES_TIMEOUT_MS);
+  });
+  const lastChecked = new Date().toISOString();
 
-  return results;
+  await Promise.race([
+    Promise.all(
+      scrapers.map(async (scraper) => {
+        const health = await checkSourceHealth(scraper);
+        results.set(getSourceName(scraper), health);
+      }),
+    ),
+    deadline,
+  ]);
+  clearTimeout(deadlineId);
+
+  const finalResults = new Map(results);
+  for (const scraper of scrapers) {
+    const sourceName = getSourceName(scraper);
+    if (!finalResults.has(sourceName)) {
+      finalResults.set(sourceName, {
+        status: SourceStatus.TIMEOUT,
+        message: `Health check did not finish within ${ALL_SOURCES_TIMEOUT_MS / 1000}s`,
+        responseTime: ALL_SOURCES_TIMEOUT_MS,
+        lastChecked,
+      });
+    }
+  }
+
+  return finalResults;
 }

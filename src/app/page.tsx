@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SHUTDOWN_SOURCE_IDS } from "@/lib/shutdown-sources";
 
 interface Source {
   id: string;
@@ -30,13 +31,6 @@ interface SourceHealth {
   responseTime?: number;
   lastChecked: string;
 }
-
-const MANUAL_SOURCE_STATUS: Record<string, "Shutdown"> = {
-  "bato": "Shutdown",
-  "falcon-scans": "Shutdown",
-  "mangapark": "Shutdown",
-  "weebdex": "Shutdown",
-};
 
 interface EndpointProps {
   method: string;
@@ -422,11 +416,9 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {sources.map((source) => {
-                const manualStatus = MANUAL_SOURCE_STATUS[source.id];
-                const effectiveStatus =
-                  manualStatus === "Shutdown"
-                    ? "shutdown"
-                    : health[source.id]?.status;
+                const effectiveStatus = SHUTDOWN_SOURCE_IDS.has(source.id)
+                  ? "shutdown"
+                  : health[source.id]?.status;
                 const sourceHealth = health[source.id];
                 const statusColor = getStatusColor(effectiveStatus);
                 const statusLabel = getStatusLabel(effectiveStatus);
