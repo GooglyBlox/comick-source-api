@@ -11,7 +11,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Unstable |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
 | Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
-| AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
+| AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Unstable |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Unstable |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Active   |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
