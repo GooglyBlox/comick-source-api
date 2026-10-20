@@ -6,7 +6,7 @@ Next.js API for scraping manga metadata from multiple sources.
 
 | Source             | ID                   | Base URL                    | Status   |
 | ------------------ | -------------------- | --------------------------- | -------- |
-| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Unstable |
+| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Unstable |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Unstable |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Active   |
-| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Active   |
+| KDT Scans          | `kdt-scans`          | https://www.silentquill.net | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
 | KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
@@ -51,7 +51,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
 | NovelCool          | `novelcool`          | https://www.novelcool.com   | Active   |
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Unstable |
-| Project Suki       | `project-suki`       | https://projectsuki.com     | Unstable |
+| Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qimanhwa.com        | Unstable |
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
 | Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
