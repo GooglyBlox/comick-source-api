@@ -8,7 +8,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | ------------------ | -------------------- | --------------------------- | -------- |
 | Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Unstable |
-| Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
+| Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Unstable |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
 | Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Active   |
@@ -21,7 +21,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |
 | Firescans          | `firescans`          | https://firescans.xyz       | Unstable |
 | FlameComics        | `flamecomics`        | https://flamecomics.xyz     | Active   |
-| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
+| Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Unstable |
 | Greed Scans        | `greed-scans`        | https://greedscans.com      | Unstable |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Unstable |
