@@ -45,12 +45,9 @@ export class RdscansScraper extends BaseScraper {
       const ajaxUrl = `${mangaUrl}ajax/chapters/`;
 
       const response = await fetch(ajaxUrl, {
-        method: "POST",
         headers: {
           "User-Agent": this.config.userAgent,
           Accept: "*/*",
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          Origin: this.BASE_URL,
           Referer: mangaUrl,
           "X-Requested-With": "XMLHttpRequest",
         },
