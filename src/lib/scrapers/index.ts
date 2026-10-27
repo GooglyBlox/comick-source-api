@@ -84,6 +84,7 @@ import { ReiMangaScraper } from "./reimanga";
 import { HachirumiScraper } from "./hachirumi";
 import { DankeScraper } from "./danke";
 import { TCBScansScraper } from "./tcbscans";
+import { KaynScansScraper } from "./kaynscans";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -172,6 +173,7 @@ const scrapers: BaseScraper[] = [
   new HachirumiScraper(),
   new DankeScraper(),
   new TCBScansScraper(),
+  new KaynScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -294,4 +296,5 @@ export {
   HachirumiScraper,
   DankeScraper,
   TCBScansScraper,
+  KaynScansScraper,
 };
