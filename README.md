@@ -16,6 +16,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
 | Diva Scans         | `diva-scans`         | https://divascans.org       | Unstable |
+| Dynasty Reader     | `dynasty-reader`     | https://dynasty-scans.com   | Active   |
 | Elf Toon           | `elf-toon`           | https://elftoon.net         | Active   |
 | Eva Scans          | `eva-scans`          | https://evascans.net        | Active   |
 | Falcon Scans       | `falcon-scans`       | https://falconscans.com     | Shutdown |

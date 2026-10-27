@@ -69,6 +69,7 @@ import { HadesScansScraper } from "./hadesscans";
 import { ScytheScansScraper } from "./scythescans";
 import { WebtoonScraper } from "./webtoon";
 import { MangaDexScraper } from "./mangadex";
+import { DynastyScansScraper } from "./dynastyscans";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -142,6 +143,7 @@ const scrapers: BaseScraper[] = [
   new ScytheScansScraper(),
   new WebtoonScraper(),
   new MangaDexScraper(),
+  new DynastyScansScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -249,4 +251,5 @@ export {
   ScytheScansScraper,
   WebtoonScraper,
   MangaDexScraper,
+  DynastyScansScraper,
 };
