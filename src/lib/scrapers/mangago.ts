@@ -4,7 +4,6 @@ import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MangagoScraper extends BaseScraper {
   private readonly BASE_URL = "https://www.mangago.zone";
-  private readonly SEARCH_URL = "https://www.mangago.me";
 
   getName(): string {
     return "Mangago";
@@ -23,7 +22,7 @@ export class MangagoScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.SEARCH_URL}/r/l_search/?name=${encodeURIComponent(query)}`;
+    const searchUrl = `${this.BASE_URL}/r/l_search/?name=${encodeURIComponent(query)}`;
     const html = await this.fetchWithRetry(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
@@ -37,13 +36,8 @@ export class MangagoScraper extends BaseScraper {
 
       if (!title || !href) return;
 
-      const url = href.replace(
-        "mangago.me/read-manga/",
-        "mangago.zone/read-manga/",
-      );
-
-      const urlMatch = url.match(/\/read-manga\/([^/]+)/);
-      const id = urlMatch ? urlMatch[1] : "";
+      const url = href.replace("mangago.me/", "mangago.zone/");
+      const id = this.extractId(url);
 
       if (!id) return;
 
@@ -79,8 +73,7 @@ export class MangagoScraper extends BaseScraper {
     const resultsWithDates = await Promise.all(
       topResults.map(async (result) => {
         try {
-          const chapterListUrl = `${this.BASE_URL}/read-manga/${result.id}/`;
-          const chapterHtml = await this.fetchWithRetry(chapterListUrl);
+          const chapterHtml = await this.fetchWithRetry(result.url);
           const $chapter = cheerio.load(chapterHtml);
 
           const $firstRow = $chapter("#chapter_table tbody tr").first();
@@ -115,14 +108,25 @@ export class MangagoScraper extends BaseScraper {
     const html = await this.fetchWithRetry(url);
     const $ = cheerio.load(html);
 
+    const voteTitle = $('a[href*="/home/manga/status/"]')
+      .first()
+      .attr("title")
+      ?.replace(/^.*?\bread\s+/i, "")
+      .trim();
+
     const title =
       $("h1").first().text().trim() ||
+      voteTitle ||
       $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/read-manga\/([^/]+)/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
+    const id = this.extractId(url) || Date.now().toString();
 
     return { title, id };
+  }
+
+  private extractId(url: string): string {
+    const match = url.match(/\/(?:work|read-manga)\/([^/?#]+)/);
+    return match ? match[1] : "";
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
