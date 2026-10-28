@@ -6,7 +6,7 @@ Next.js API for scraping manga metadata from multiple sources.
 
 | Source             | ID                   | Base URL                    | Status   |
 | ------------------ | -------------------- | --------------------------- | -------- |
-| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Unstable |
+| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Unstable |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
@@ -64,7 +64,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Stonescape         | `stonescape`         | https://stonescape.xyz      | Active   |
 | Temple Scan        | `temple-scan`        | https://templetoons.com     | Unstable |
 | Thunderscans       | `thunderscans`       | https://en-thunderscans.com | Active   |
-| TopManhua          | `topmanhua`          | https://manhuatop.org       | Unstable |
+| TopManhua          | `topmanhua`          | https://manhuatop.org       | Active   |
 | UTOON              | `utoon`              | https://utoon.net           | Active   |
 | Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
