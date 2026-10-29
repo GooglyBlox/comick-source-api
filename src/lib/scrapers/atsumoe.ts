@@ -54,7 +54,12 @@ export class AtsuMoeScraper extends BaseScraper {
 
     const id = mangaId;
     const chaptersUrl = `${this.BASE_URL}/api/manga/chapters?id=${id}&filter=all&sort=desc&page=0`;
-    const response = await fetch(chaptersUrl);
+    const response = await fetch(chaptersUrl, {
+      headers: {
+        "User-Agent": this.config.userAgent,
+        Accept: "application/json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch manga info: ${response.status}`);
