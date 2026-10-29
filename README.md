@@ -37,6 +37,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Lua Comic          | `lua-comic`          | https://luacomic.org        | Active   |
 | Madarascans        | `madarascans`        | https://madarascans.net     | Active   |
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
+| Mangaball          | `mangaball`          | https://mangaball.com       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Unstable |
 | MangaDex           | `mangadex`           | https://mangadex.org        | Active   |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
