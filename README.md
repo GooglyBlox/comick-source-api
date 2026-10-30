@@ -82,6 +82,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Thunderscans       | `thunderscans`       | https://en-thunderscans.com     | Active   |
 | TopManhua          | `topmanhua`          | https://manhuatop.org           | Active   |
 | UTOON              | `utoon`              | https://utoon.net               | Shutdown |
+| Valir Scans        | `valir-scans`        | https://valirscans.org          | Active   |
 | Violetscans        | `violetscans`        | https://violetscans.org         | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org         | Active   |
 | WEBTOON            | `webtoon`            | https://www.webtoons.com        | Active   |
