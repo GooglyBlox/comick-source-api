@@ -127,23 +127,27 @@ export class RitharscansScraper extends BaseScraper {
       coverImage?: string;
     }> = [];
 
-    $("button[id]").each((_, element) => {
+    $('div[wire\\:key^="serie-"]').each((_, element) => {
       const $item = $(element);
-      const id = $item.attr("id");
-      const $link = $item.find("a").first();
+      const $link = $item.find("a[href*='/series/']").first();
       const href = $link.attr("href");
-      const title = $link.attr("title") || $item.find("h3").text().trim();
+      const title =
+        $link.attr("title") || $item.find("h3").first().text().trim();
 
-      if (!href || !id) return;
+      if (!href) return;
 
       const fullUrl = href.startsWith("http")
         ? href
         : `${this.BASE_URL}${href}`;
 
-      const $img = $item.find("div[style*='background-image']").first();
-      const styleAttr = $img.attr("style") || "";
-      const urlMatch = styleAttr.match(/url\((.*?)\)/);
-      const coverImage = urlMatch ? urlMatch[1] : undefined;
+      const idMatch = fullUrl.match(/\/series\/([a-f0-9-]+)/);
+      const id = idMatch
+        ? idMatch[1]
+        : ($item.attr("wire:key") || "").replace("serie-", "");
+
+      if (!id) return;
+
+      const coverImage = $item.find("img").first().attr("src");
 
       matchedSeries.push({
         id,
