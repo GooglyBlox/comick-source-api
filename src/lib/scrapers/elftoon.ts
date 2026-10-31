@@ -7,6 +7,7 @@ interface ElfSearchSeries {
   title: string;
   slug: string;
   urlSlug?: string;
+  type?: string;
   coverImage?: string | null;
   rating?: number | null;
 }
@@ -41,8 +42,7 @@ export class ElfToonScraper extends BaseScraper {
     const $ = cheerio.load(html);
 
     const title =
-      $("h1").first().text().trim() ||
-      $("title").text().split(" - ")[0].trim();
+      $("h1").first().text().trim() || $("title").text().split(" - ")[0].trim();
 
     const urlMatch = url.match(/\/series\/[^/]+\/([^/?#]+)/);
     const id = urlMatch ? urlMatch[1] : Date.now().toString();
@@ -86,21 +86,51 @@ export class ElfToonScraper extends BaseScraper {
     return Array.from(byNumber.values()).sort((a, b) => a.number - b.number);
   }
 
+  private getTotalPages(html: string): number {
+    const match = html.match(/\\"totalPages\\":(\d+)/);
+    return match ? Math.max(1, parseInt(match[1], 10)) : 1;
+  }
+
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
     try {
-      const html = await this.fetchWithRetry(mangaUrl);
       const pathMatch = mangaUrl.match(/\/series\/[^/]+\/[^/?#]+/);
       if (!pathMatch) {
         throw new Error(`Unrecognized series URL: ${mangaUrl}`);
       }
+      const seriesPath = pathMatch[0];
+      const seriesUrl = `${this.BASE_URL}${seriesPath}`;
 
-      return this.parseChapters(html, pathMatch[0]).map((chapter) => ({
-        id: `${chapter.number}`,
-        number: chapter.number,
-        title: `Chapter ${chapter.number}`,
-        url: chapter.url,
-        lastUpdated: chapter.lastUpdated,
-      }));
+      const firstHtml = await this.fetchWithRetry(seriesUrl);
+      const totalPages = this.getTotalPages(firstHtml);
+
+      const pages = [firstHtml];
+      if (totalPages > 1) {
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, index) =>
+            this.fetchWithRetry(`${seriesUrl}?page=${index + 2}`),
+          ),
+        );
+        pages.push(...rest);
+      }
+
+      const byNumber = new Map<number, ElfSeriesChapter>();
+      for (const html of pages) {
+        for (const chapter of this.parseChapters(html, seriesPath)) {
+          if (!byNumber.has(chapter.number)) {
+            byNumber.set(chapter.number, chapter);
+          }
+        }
+      }
+
+      return Array.from(byNumber.values())
+        .sort((a, b) => a.number - b.number)
+        .map((chapter) => ({
+          id: `${chapter.number}`,
+          number: chapter.number,
+          title: `Chapter ${chapter.number}`,
+          url: chapter.url,
+          lastUpdated: chapter.lastUpdated,
+        }));
     } catch (error) {
       console.error("[ElfToon] Chapter fetch error:", error);
       throw error;
@@ -116,7 +146,7 @@ export class ElfToonScraper extends BaseScraper {
           Accept: "application/json",
           Referer: `${this.BASE_URL}/`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -124,10 +154,12 @@ export class ElfToonScraper extends BaseScraper {
     }
 
     const data: { series?: ElfSearchSeries[] } = await response.json();
-    const series = (data.series || []).slice(0, 5);
+    const series = (data.series || [])
+      .filter((item) => !/novel/i.test(item.type || ""))
+      .slice(0, 20);
 
     return Promise.all(
-      series.map(async (item): Promise<SearchResult> => {
+      series.map(async (item, index): Promise<SearchResult> => {
         const slug = item.urlSlug || item.slug;
         const seriesPath = `/series/comic/${slug}`;
         const url = `${this.BASE_URL}${seriesPath}`;
@@ -136,22 +168,24 @@ export class ElfToonScraper extends BaseScraper {
         let lastUpdated = "";
         let lastUpdatedTimestamp: number | undefined;
 
-        try {
-          const html = await this.fetchWithRetry(url);
-          const chapters = this.parseChapters(html, seriesPath);
-          const latest = chapters[chapters.length - 1];
-          if (latest) {
-            latestChapter = latest.number;
-            if (latest.lastUpdated) {
-              const parsed = new Date(latest.lastUpdated);
-              if (!isNaN(parsed.getTime())) {
-                lastUpdatedTimestamp = parsed.getTime();
-                lastUpdated = parsed.toLocaleDateString();
+        if (index < 5) {
+          try {
+            const html = await this.fetchWithRetry(`${url}?sort=desc`);
+            const chapters = this.parseChapters(html, seriesPath);
+            const latest = chapters[chapters.length - 1];
+            if (latest) {
+              latestChapter = latest.number;
+              if (latest.lastUpdated) {
+                const parsed = new Date(latest.lastUpdated);
+                if (!isNaN(parsed.getTime())) {
+                  lastUpdatedTimestamp = parsed.getTime();
+                  lastUpdated = parsed.toLocaleDateString();
+                }
               }
             }
+          } catch (error) {
+            console.error("[ElfToon] Latest chapter fetch error:", error);
           }
-        } catch (error) {
-          console.error("[ElfToon] Latest chapter fetch error:", error);
         }
 
         let coverImage: string | undefined;
@@ -171,7 +205,7 @@ export class ElfToonScraper extends BaseScraper {
           lastUpdatedTimestamp,
           rating: item.rating ?? undefined,
         };
-      })
+      }),
     );
   }
 }
