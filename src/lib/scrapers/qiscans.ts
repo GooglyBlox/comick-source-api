@@ -1,36 +1,40 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 interface QiScansChapter {
   id: number;
+  slug: string;
   number: number;
   title: string | null;
-  slug: string;
   createdAt: string;
-  mangaPost: {
-    id: number;
-  };
+  requiresPurchase?: boolean;
 }
 
-interface QiScansPost {
+interface QiScansSearchItem {
   id: number;
   slug: string;
-  postTitle: string;
-  featuredImage: string;
-  updatedAt: string;
-  _count: {
-    chapters: number;
-  };
-  averageRating: number;
-  chapters?: Array<{
-    number: number;
-  }>;
+  title: string;
+  cover?: string | null;
+}
+
+interface QiScansDetail {
+  id: number;
+  slug: string;
+  title: string;
+  cover?: string | null;
+  lastChapterAddedAt?: string | null;
+  createdAt?: string;
+  stats?: { averageRating?: number | null; chapterCount?: number };
+}
+
+interface QiScansChapterPage {
+  data: QiScansChapter[];
+  totalPages: number;
 }
 
 export class QiScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://qimanhwa.com";
-  private readonly API_URL = "https://api.qimanhwa.com";
+  private readonly BASE_URL = "https://qimanga.com";
+  private readonly API_URL = "https://api.qimanga.com/api/v1";
 
   getName(): string {
     return "Qi Scans";
@@ -41,7 +45,11 @@ export class QiScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("qiscans.org") || url.includes("qimanhwa.com");
+    return (
+      url.includes("qiscans.org") ||
+      url.includes("qimanhwa.com") ||
+      url.includes("qimanga.com")
+    );
   }
 
   getType(): SourceType {
@@ -68,67 +76,8 @@ export class QiScansScraper extends BaseScraper {
     return "just now";
   }
 
-  async search(query: string): Promise<SearchResult[]> {
-    try {
-      const searchUrl = `${this.API_URL}/api/query?page=1&perPage=21&searchTerm=${encodeURIComponent(query)}&orderBy=createdAt`;
-
-      const response = await fetch(searchUrl, {
-        headers: {
-          "User-Agent": this.config.userAgent,
-          Accept: "application/json, text/plain, */*",
-          Origin: this.BASE_URL,
-          Referer: `${this.BASE_URL}/`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const posts: QiScansPost[] = data.posts || [];
-
-      const limitedPosts = posts.slice(0, 5);
-
-      return limitedPosts.map((post) => {
-        const latestChapter =
-          post.chapters && post.chapters.length > 0
-            ? Math.max(...post.chapters.map((ch) => ch.number))
-            : post._count?.chapters || 0;
-
-        const lastUpdatedDate = new Date(post.updatedAt);
-        const lastUpdated = this.formatRelativeTime(lastUpdatedDate);
-
-        return {
-          id: post.id.toString(),
-          title: post.postTitle,
-          url: `${this.BASE_URL}/series/${post.slug}`,
-          coverImage: post.featuredImage || undefined,
-          latestChapter,
-          lastUpdated,
-          lastUpdatedTimestamp: lastUpdatedDate.getTime(),
-          rating: post.averageRating || undefined,
-        };
-      });
-    } catch (error) {
-      console.error("QiScans search error:", error);
-      throw error;
-    }
-  }
-
-  async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
-    const slugMatch = url.match(/\/series\/([^/]+)/);
-    const slug = slugMatch ? slugMatch[1] : "";
-
-    if (!slug) {
-      throw new Error("Could not extract manga slug from URL");
-    }
-
-    const titlePart = slug.replace(/^\d+-/, "").replace(/-/g, " ");
-
-    const searchUrl = `${this.API_URL}/api/query?page=1&perPage=10&searchTerm=${encodeURIComponent(titlePart)}&orderBy=createdAt`;
-
-    const response = await fetch(searchUrl, {
+  private async getJson<T>(path: string): Promise<T> {
+    const response = await fetch(`${this.API_URL}${path}`, {
       headers: {
         "User-Agent": this.config.userAgent,
         Accept: "application/json, text/plain, */*",
@@ -141,73 +90,119 @@ export class QiScansScraper extends BaseScraper {
       throw new Error(`API request failed: ${response.status}`);
     }
 
-    const data = await response.json();
-    const posts: QiScansPost[] = data.posts || [];
+    return response.json() as Promise<T>;
+  }
 
-    const manga = posts.find((post) => post.slug === slug);
+  private getSlug(url: string): string {
+    const match = url.match(/\/series\/([^/?#]+)/);
+    return match ? match[1] : "";
+  }
 
-    if (manga) {
-      return {
-        title: manga.postTitle,
-        id: manga.id.toString(),
-      };
+  private async getLatestChapter(slug: string): Promise<number> {
+    const page = await this.getJson<QiScansChapterPage>(
+      `/series/${slug}/chapters?page=1&perPage=20`,
+    );
+    const readable = (page.data || []).filter((ch) => !ch.requiresPurchase);
+    return readable.length > 0
+      ? Math.max(...readable.map((ch) => ch.number))
+      : 0;
+  }
+
+  async search(query: string): Promise<SearchResult[]> {
+    try {
+      const data = await this.getJson<{ data?: QiScansSearchItem[] }>(
+        `/series/search?q=${encodeURIComponent(query)}`,
+      );
+      const items = (data.data || []).slice(0, 5);
+
+      return await Promise.all(
+        items.map(async (item) => {
+          let latestChapter = 0;
+          let updated: Date | null = null;
+          let rating: number | undefined;
+
+          const [detail, latest] = await Promise.all([
+            this.getJson<QiScansDetail>(`/series/${item.slug}`).catch(
+              () => null,
+            ),
+            this.getLatestChapter(item.slug).catch(() => 0),
+          ]);
+
+          latestChapter = latest;
+          if (detail) {
+            const stamp = detail.lastChapterAddedAt || detail.createdAt;
+            updated = stamp ? new Date(stamp) : null;
+            rating = detail.stats?.averageRating || undefined;
+            if (!latestChapter) {
+              latestChapter = detail.stats?.chapterCount || 0;
+            }
+          }
+
+          return {
+            id: item.id.toString(),
+            title: item.title,
+            url: `${this.BASE_URL}/series/${item.slug}`,
+            coverImage: item.cover || undefined,
+            latestChapter,
+            lastUpdated: updated ? this.formatRelativeTime(updated) : "",
+            lastUpdatedTimestamp: updated ? updated.getTime() : undefined,
+            rating,
+          };
+        }),
+      );
+    } catch (error) {
+      console.error("QiScans search error:", error);
+      throw error;
+    }
+  }
+
+  async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
+    const slug = this.getSlug(url);
+
+    if (!slug) {
+      throw new Error("Could not extract manga slug from URL");
     }
 
-    if (posts.length > 0) {
-      return {
-        title: posts[0].postTitle,
-        id: posts[0].id.toString(),
-      };
-    }
+    const detail = await this.getJson<QiScansDetail>(`/series/${slug}`);
 
-    throw new Error(`Could not find manga: ${slug}`);
+    return { title: detail.title, id: slug };
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
     try {
-      const { id: mangaId } = await this.extractMangaInfo(mangaUrl);
+      const slug = this.getSlug(mangaUrl);
 
-      const chaptersUrl = `${this.API_URL}/api/v2/posts/${mangaId}/chapters?page=1&perPage=10000&sortOrder=desc&q=`;
-
-      const response = await fetch(chaptersUrl, {
-        headers: {
-          "User-Agent": this.config.userAgent,
-          Accept: "application/json, text/plain, */*",
-          "Accept-Language": "en-US,en;q=0.9",
-          Origin: this.BASE_URL,
-          Referer: `${this.BASE_URL}/`,
-          "Sec-Fetch-Dest": "empty",
-          "Sec-Fetch-Mode": "cors",
-          "Sec-Fetch-Site": "same-site",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+      if (!slug) {
+        throw new Error("Could not extract manga slug from URL");
       }
 
-      const data = await response.json();
-      const chapters: QiScansChapter[] = data.data || [];
+      const first = await this.getJson<QiScansChapterPage>(
+        `/series/${slug}/chapters?page=1&perPage=100`,
+      );
+      const rest = await Promise.all(
+        Array.from(
+          { length: Math.max(0, (first.totalPages || 1) - 1) },
+          (_, i) =>
+            this.getJson<QiScansChapterPage>(
+              `/series/${slug}/chapters?page=${i + 2}&perPage=100`,
+            ),
+        ),
+      );
 
-      const slugMatch = mangaUrl.match(/\/series\/([^/]+)/);
-      const mangaSlug = slugMatch ? slugMatch[1] : "";
-
-      const seenChapterNumbers = new Set<number>();
+      const seen = new Set<number>();
       const result: ScrapedChapter[] = [];
 
-      for (const chapter of chapters) {
-        if (seenChapterNumbers.has(chapter.number)) {
+      for (const chapter of [first, ...rest].flatMap((p) => p.data || [])) {
+        if (chapter.requiresPurchase || seen.has(chapter.number)) {
           continue;
         }
-        seenChapterNumbers.add(chapter.number);
-
-        const chapterUrl = `${this.BASE_URL}/series/${mangaSlug}/${chapter.slug}`;
+        seen.add(chapter.number);
 
         result.push({
           id: chapter.id.toString(),
           number: chapter.number,
           title: chapter.title || undefined,
-          url: chapterUrl,
+          url: `${this.BASE_URL}/series/${slug}/${chapter.slug}`,
           lastUpdated: this.formatRelativeTime(new Date(chapter.createdAt)),
         });
       }
