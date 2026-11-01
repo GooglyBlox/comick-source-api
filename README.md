@@ -38,7 +38,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Magus Manga        | `magus-manga`        | https://magustoon.org       | Active   |
 | MangaCloud         | `mangacloud`         | https://mangacloud.org      | Unstable |
 | Mangago            | `mangago`            | https://www.mangago.zone    | Active   |
-| MangaKatana        | `mangakatana`        | https://mangakatana.com     | Unstable |
+| MangaKatana        | `mangakatana`        | https://mangakatana.com     | Active   |
 | Mangaloom          | `mangaloom`          | https://mangaloom.com       | Unstable |
 | MangaPark          | `mangapark`          | https://mangapark.io        | Shutdown |
 | MangaRead          | `mangaread`          | https://mangaread.org       | Active   |
@@ -54,7 +54,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
 | Qi Scans           | `qi-scans`           | https://qimanhwa.com        | Unstable |
 | Rage Scans         | `rage-scans`         | https://ragescans.com       | Unstable |
-| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Active   |
+| Raven Scans        | `raven-scans`        | https://ravenscans.org      | Unstable |
 | RD Scans           | `rd-scans`           | https://rdscans.com         | Active   |
 | Ritharscans        | `ritharscans`        | https://ritharscans.com     | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com      | Active   |
@@ -69,11 +69,11 @@ Next.js API for scraping manga metadata from multiple sources.
 | Violetscans        | `violetscans`        | https://violetscans.org     | Active   |
 | Vortex Scans       | `vortex-scans`       | https://vortexscans.org     | Active   |
 | WEBTOON            | `webtoon`            | https://www.webtoons.com    | Active   |
-| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Active   |
+| WeebCentral        | `weebcentral`        | https://weebcentral.com     | Unstable |
 | Weebdex            | `weebdex`            | https://weebdex.org         | Shutdown |
 | WitchScans         | `witchscans`         | https://witchscans.com      | Unstable |
 | Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
-| Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Unstable |
+| Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
 | Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
 
 ## Setup
