@@ -25,6 +25,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Galaxy Degen Scans | `galaxy-degen-scans` | https://gdscans.com         | Active   |
 | Greed Scans        | `greed-scans`        | https://greedscans.org      | Unstable |
 | Hades Scans        | `hades-scans`        | https://hadesscans.com      | Shutdown |
+| Hive Toon          | `hive-toon`          | https://hivetoons.org       | Active   |
 | KaliScan           | `kaliscan`           | https://kaliscan.com        | Shutdown |
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Active   |
 | KDT Scans          | `kdt-scans`          | https://silentquill.net     | Unstable |
