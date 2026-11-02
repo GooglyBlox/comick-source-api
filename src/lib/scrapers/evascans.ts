@@ -4,7 +4,7 @@ import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class EvaScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://evascans.org";
+  private readonly BASE_URL = "https://evascans.net";
 
   getName(): string {
     return "Eva Scans";
@@ -19,7 +19,7 @@ export class EvaScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("evascans.org");
+    return url.includes("evascans.net") || url.includes("evascans.org");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -54,13 +54,12 @@ export class EvaScansScraper extends BaseScraper {
           return;
         }
 
-        const hasLockedBadge = $link.find(".locked-badge").length > 0;
-        if (hasLockedBadge) {
-          return;
-        }
-
         const chapterNumAttr = $chapter.attr("data-num");
-        const chapterText = $link.find(".chapternum").text().trim();
+        const chapterText = $link
+          .find(".chapternum")
+          .text()
+          .replace(/\s+/g, " ")
+          .trim();
         const dateText = $link.find(".chapterdate").text().trim();
 
         let chapterNumber: number;
@@ -129,23 +128,22 @@ export class EvaScansScraper extends BaseScraper {
       rating?: number;
     }> = [];
 
-    $(".legendary-grid article.manga-card-v").each((_, element) => {
+    $(".listupd .bs .bsx").each((_, element) => {
       const $item = $(element);
       const link = $item.find("a").first();
       const url = link.attr("href");
-      const title = link.find(".card-v-title a").text().trim() ||
-                    $item.find(".card-v-title a").text().trim();
+      const title = link.attr("title") || $item.find(".tt").text().trim();
 
       if (!url) return;
 
       const slugMatch = url.match(/\/series\/([^/]+)/);
       const id = slugMatch ? slugMatch[1] : "";
 
-      const coverImg = $item.find("img").first();
+      const coverImg = $item.find("img.ts-post-image").first();
       const coverImage = coverImg.attr("src") || coverImg.attr("data-src");
 
-      const ratingDiv = $item.find(".v-rating").first();
-      const ratingText = ratingDiv.text().trim().replace(/[^0-9.]/g, "");
+      const ratingDiv = $item.find(".numscore").first();
+      const ratingText = ratingDiv.text().trim();
       const rating = ratingText ? parseFloat(ratingText) : undefined;
 
       matchedSeries.push({
@@ -163,82 +161,59 @@ export class EvaScansScraper extends BaseScraper {
 
     const limitedSeries = matchedSeries.slice(0, 5);
 
-    const results: SearchResult[] = [];
-    for (const series of limitedSeries) {
-      try {
-        const seriesHtml = await this.fetchWithRetry(series.url);
-        const $series = cheerio.load(seriesHtml);
+    return Promise.all(
+      limitedSeries.map(async (series): Promise<SearchResult> => {
+        try {
+          const seriesHtml = await this.fetchWithRetry(series.url);
+          const $series = cheerio.load(seriesHtml);
 
-        let latestChapter = 0;
-        let lastUpdatedText = "";
+          let latestChapter = 0;
+          let lastUpdatedText = "";
 
-        $series("#chapterlist ul li").each((_, el) => {
-          const $ch = $series(el);
-          const $link = $ch.find("a").first();
-          const href = $link.attr("href");
+          $series("#chapterlist ul li").each((_, el) => {
+            const $ch = $series(el);
+            const $link = $ch.find("a").first();
+            const href = $link.attr("href");
+            const num = parseFloat($ch.attr("data-num") || "");
 
-          const hasLockedBadge = $link.find(".locked-badge").length > 0;
-          if (hasLockedBadge || !href || href.includes("#")) {
-            return;
-          }
+            if (!href || href.includes("#") || isNaN(num)) return;
 
-          if (latestChapter === 0) {
-            const chapterNumAttr = $ch.attr("data-num");
-            if (chapterNumAttr) {
-              latestChapter = parseFloat(chapterNumAttr);
-            }
-            lastUpdatedText = $link.find(".chapterdate").text().trim();
-          }
-
-          const dataNum = $ch.attr("data-num");
-          if (dataNum) {
-            const num = parseFloat(dataNum);
             if (num > latestChapter) {
               latestChapter = num;
-              lastUpdatedText = $ch.find(".chapterdate").text().trim();
+              lastUpdatedText = $link.find(".chapterdate").text().trim();
             }
-          }
-        });
+          });
 
-        let lastUpdatedTimestamp: number | undefined;
-        if (lastUpdatedText) {
-          try {
-            const parsedDate = new Date(lastUpdatedText);
-            if (!isNaN(parsedDate.getTime())) {
-              lastUpdatedTimestamp = parsedDate.getTime();
-            }
-          } catch {
-            // Ignore date parse errors
-          }
+          const parsedDate = lastUpdatedText
+            ? new Date(lastUpdatedText).getTime()
+            : NaN;
+
+          return {
+            id: series.id,
+            title: series.title,
+            url: series.url,
+            coverImage: series.coverImage,
+            latestChapter,
+            lastUpdated: lastUpdatedText,
+            lastUpdatedTimestamp: isNaN(parsedDate) ? undefined : parsedDate,
+            rating: series.rating,
+          };
+        } catch (error) {
+          console.error(
+            `[Eva Scans] Failed to fetch chapter list for ${series.title}:`,
+            error
+          );
+          return {
+            id: series.id,
+            title: series.title,
+            url: series.url,
+            coverImage: series.coverImage,
+            latestChapter: 0,
+            lastUpdated: "",
+            rating: series.rating,
+          };
         }
-
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter,
-          lastUpdated: lastUpdatedText,
-          lastUpdatedTimestamp,
-          rating: series.rating,
-        });
-      } catch (error) {
-        console.error(
-          `[Eva Scans] Failed to fetch chapter list for ${series.title}:`,
-          error
-        );
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter: 0,
-          lastUpdated: "",
-          rating: series.rating,
-        });
-      }
-    }
-
-    return results;
+      })
+    );
   }
 }
