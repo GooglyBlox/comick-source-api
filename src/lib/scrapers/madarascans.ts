@@ -4,7 +4,7 @@ import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class MadaraScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://madarascans.com";
+  private readonly BASE_URL = "https://madarascans.net";
 
   getName(): string {
     return "Madarascans";
@@ -19,7 +19,7 @@ export class MadaraScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("madarascans.com");
+    return url.includes("madarascans.net") || url.includes("madarascans.com");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -27,8 +27,8 @@ export class MadaraScansScraper extends BaseScraper {
     const $ = cheerio.load(html);
 
     const title =
+      $(".post-title h1").first().text().trim() ||
       $("h1").first().text().trim() ||
-      $(".legend-title").first().text().trim() ||
       $("title").text().split(" - ")[0].trim();
 
     const urlMatch = url.match(/\/series\/([^/]+)/);
@@ -45,28 +45,28 @@ export class MadaraScansScraper extends BaseScraper {
       const html = await this.fetchWithRetry(mangaUrl);
       const $ = cheerio.load(html);
 
-      $(".ch-list-grid .ch-item").each((_: number, element: any) => {
+      $("#chapterlist ul li").each((_: number, element: any) => {
         const $chapter = $(element);
-        const $link = $chapter.find("a.ch-main-anchor").first();
+        const $link = $chapter.find("a").first();
         const href = $link.attr("href");
-
-        if ($chapter.hasClass("locked")) {
-          return;
-        }
 
         if (!href || href.includes("#")) {
           return;
         }
 
-        const chapterNumAttr = $chapter.attr("data-ch");
-        const chapterText = $link.find(".ch-num").text().trim();
-        const dateText = $link.find(".ch-date").text().trim();
+        const chapterNumAttr = $chapter.attr("data-num");
+        const chapterText = $link
+          .find(".chapternum")
+          .text()
+          .replace(/\s+/g, " ")
+          .trim();
+        const dateText = $link.find(".chapterdate").text().trim();
 
         let chapterNumber: number;
         if (chapterNumAttr) {
           chapterNumber = parseFloat(chapterNumAttr);
         } else {
-          chapterNumber = this.extractChapterNumber(chapterText);
+          chapterNumber = this.extractChapterNumber(href);
         }
 
         if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
@@ -93,17 +93,22 @@ export class MadaraScansScraper extends BaseScraper {
     return chapters.sort((a, b) => a.number - b.number);
   }
 
-  protected extractChapterNumber(text: string): number {
+  protected extractChapterNumber(chapterUrl: string): number {
     const patterns = [
-      /chapter\s*(\d+(?:\.\d+)?)/i,
-      /ch\.?\s*(\d+(?:\.\d+)?)/i,
-      /^(\d+(?:\.\d+)?)$/,
+      /-chapter[/-](\d+)(?:[.-](\d+))?/i,
+      /chapter[/-](\d+)(?:[.-](\d+))?$/i,
     ];
 
     for (const pattern of patterns) {
-      const match = text.match(pattern);
+      const match = chapterUrl.match(pattern);
       if (match) {
-        return parseFloat(match[1]);
+        const mainNumber = parseInt(match[1], 10);
+        const decimalPart = match[2] ? parseInt(match[2], 10) : 0;
+
+        if (decimalPart > 0) {
+          return mainNumber + decimalPart / 10;
+        }
+        return mainNumber;
       }
     }
 
@@ -123,29 +128,23 @@ export class MadaraScansScraper extends BaseScraper {
       rating?: number;
     }> = [];
 
-    $(".legend-card").each((_, element) => {
+    $(".listupd .bs .bsx").each((_, element) => {
       const $item = $(element);
+      const link = $item.find("a").first();
+      const url = link.attr("href");
+      const title = link.attr("title") || $item.find(".tt").text().trim();
 
-      const titleLink = $item.find(".legend-content .legend-title a").first();
-      const title = titleLink.text().trim();
-
-      let url = titleLink.attr("href");
-      if (!url) {
-        url = $item.find("a.legend-poster").first().attr("href");
-      }
-
-      if (!url || !title) return;
+      if (!url) return;
 
       const slugMatch = url.match(/\/series\/([^/]+)/);
       const id = slugMatch ? slugMatch[1] : "";
 
-      const coverImg = $item.find("img.legend-img").first();
+      const coverImg = $item.find("img.ts-post-image").first();
       const coverImage = coverImg.attr("src") || coverImg.attr("data-src");
 
-      const ratingDiv = $item.find(".legend-rating").first();
+      const ratingDiv = $item.find(".numscore").first();
       const ratingText = ratingDiv.text().trim();
-      const ratingMatch = ratingText.match(/(\d+(?:\.\d+)?)/);
-      const rating = ratingMatch ? parseFloat(ratingMatch[1]) : undefined;
+      const rating = ratingText ? parseFloat(ratingText) : undefined;
 
       matchedSeries.push({
         id,
@@ -162,83 +161,59 @@ export class MadaraScansScraper extends BaseScraper {
 
     const limitedSeries = matchedSeries.slice(0, 5);
 
-    const results: SearchResult[] = [];
-    for (const series of limitedSeries) {
-      try {
-        const seriesHtml = await this.fetchWithRetry(series.url);
-        const $series = cheerio.load(seriesHtml);
+    return Promise.all(
+      limitedSeries.map(async (series): Promise<SearchResult> => {
+        try {
+          const seriesHtml = await this.fetchWithRetry(series.url);
+          const $series = cheerio.load(seriesHtml);
 
-        let latestChapter = 0;
-        let lastUpdatedText = "";
+          let latestChapter = 0;
+          let lastUpdatedText = "";
 
-        $series(".ch-list-grid .ch-item").each((_, el) => {
-          const $ch = $series(el);
+          $series("#chapterlist ul li").each((_, el) => {
+            const $ch = $series(el);
+            const $link = $ch.find("a").first();
+            const href = $link.attr("href");
+            const num = parseFloat($ch.attr("data-num") || "");
 
-          if ($ch.hasClass("locked")) {
-            return;
-          }
+            if (!href || href.includes("#") || isNaN(num)) return;
 
-          const $link = $ch.find("a.ch-main-anchor").first();
-          const href = $link.attr("href");
-
-          if (href && !href.includes("#")) {
-            const chapterNumAttr = $ch.attr("data-ch");
-            const chapterText = $link.find(".ch-num").text().trim();
-            const dateText = $link.find(".ch-date").text().trim();
-
-            let chapterNum: number;
-            if (chapterNumAttr) {
-              chapterNum = parseFloat(chapterNumAttr);
-            } else {
-              chapterNum = this.extractChapterNumber(chapterText);
+            if (num > latestChapter) {
+              latestChapter = num;
+              lastUpdatedText = $link.find(".chapterdate").text().trim();
             }
+          });
 
-            if (chapterNum > latestChapter) {
-              latestChapter = chapterNum;
-              lastUpdatedText = dateText;
-            }
-          }
-        });
+          const parsedDate = lastUpdatedText
+            ? new Date(lastUpdatedText).getTime()
+            : NaN;
 
-        let lastUpdatedTimestamp: number | undefined;
-        if (lastUpdatedText) {
-          try {
-            const parsedDate = new Date(lastUpdatedText);
-            if (!isNaN(parsedDate.getTime())) {
-              lastUpdatedTimestamp = parsedDate.getTime();
-            }
-          } catch {
-            // Ignore date parse errors
-          }
+          return {
+            id: series.id,
+            title: series.title,
+            url: series.url,
+            coverImage: series.coverImage,
+            latestChapter,
+            lastUpdated: lastUpdatedText,
+            lastUpdatedTimestamp: isNaN(parsedDate) ? undefined : parsedDate,
+            rating: series.rating,
+          };
+        } catch (error) {
+          console.error(
+            `[MadaraScans] Failed to fetch chapter list for ${series.title}:`,
+            error
+          );
+          return {
+            id: series.id,
+            title: series.title,
+            url: series.url,
+            coverImage: series.coverImage,
+            latestChapter: 0,
+            lastUpdated: "",
+            rating: series.rating,
+          };
         }
-
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter,
-          lastUpdated: lastUpdatedText,
-          lastUpdatedTimestamp,
-          rating: series.rating,
-        });
-      } catch (error) {
-        console.error(
-          `[MadaraScans] Failed to fetch chapter list for ${series.title}:`,
-          error
-        );
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter: 0,
-          lastUpdated: "",
-          rating: series.rating,
-        });
-      }
-    }
-
-    return results;
+      })
+    );
   }
 }
