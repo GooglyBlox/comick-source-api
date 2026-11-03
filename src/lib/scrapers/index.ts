@@ -73,6 +73,7 @@ import { DynastyScansScraper } from "./dynastyscans";
 import { MangaballScraper } from "./mangaball";
 import { SwarmScraper } from "./swarm";
 import { HiveToonScraper } from "./hivetoons";
+import { MKissaScraper } from "./mkissa";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -150,6 +151,7 @@ const scrapers: BaseScraper[] = [
   new MangaballScraper(),
   new SwarmScraper(),
   new HiveToonScraper(),
+  new MKissaScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -261,4 +263,5 @@ export {
   MangaballScraper,
   SwarmScraper,
   HiveToonScraper,
+  MKissaScraper,
 };

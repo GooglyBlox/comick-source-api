@@ -53,6 +53,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
+| MKissa             | `mkissa`             | https://mkissa.to           | Active   |
 | NovelCool          | `novelcool`          | https://www.novelcool.com   | Active   |
 | Philia Scans       | `philia-scans`       | https://philiascans.org     | Unstable |
 | Project Suki       | `project-suki`       | https://projectsuki.com     | Active   |
