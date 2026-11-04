@@ -1,35 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
-interface DivaChapter {
-  id: number;
-  number: number;
+interface DivaSearchSeries {
+  id: string;
   title: string;
   slug: string;
-  isLocked: boolean;
-  isAccessible: boolean;
+  urlSlug?: string;
+  coverImage?: string | null;
+  rating?: number | null;
 }
 
-interface DivaPost {
-  id: number;
-  slug: string;
-  postTitle: string;
-  featuredImage: string;
-  averageRating: number;
-  updatedAt: string;
-  chapters: DivaChapter[];
-}
-
-interface DivaSearchResponse {
-  posts: DivaPost[];
-  totalCount: number;
+interface DivaSeriesChapter {
+  number: number;
+  url: string;
+  lastUpdated?: string;
 }
 
 export class DivaScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://divatoon.com";
-  private readonly API_URL = "https://api.divatoon.com";
+  private readonly BASE_URL = "https://divascans.org";
 
   getName(): string {
     return "Diva Scans";
@@ -44,7 +33,7 @@ export class DivaScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("divatoon.com");
+    return url.includes("divascans.org") || url.includes("divatoon.com");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -55,108 +44,134 @@ export class DivaScansScraper extends BaseScraper {
       $("h1").first().text().trim() ||
       $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/series\/([^/]+)/);
+    const urlMatch = url.match(/\/series\/[^/]+\/([^/?#]+)/);
     const id = urlMatch ? urlMatch[1] : Date.now().toString();
 
     return { title, id };
   }
 
-  async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
+  private parseChapters(html: string, seriesPath: string): DivaSeriesChapter[] {
+    const byNumber = new Map<number, DivaSeriesChapter>();
+    const base = `${this.BASE_URL}${seriesPath}`;
 
-    try {
-      const html = await this.fetchWithRetry(mangaUrl);
+    const pattern =
+      /\\"number\\":(\d+(?:\.\d+)?),[^{}]*?\\"isLocked\\":(true|false),[^{}]*?\\"publishedAt\\":(?:null|\\"([^"\\]*)\\")[^{}]*?\\"hasAccess\\":(true|false)/g;
+    let found = false;
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(html)) !== null) {
+      found = true;
+      const number = parseFloat(match[1]);
+      if (match[2] === "true" || match[4] !== "true") continue;
+      if (byNumber.has(number)) continue;
+      byNumber.set(number, {
+        number,
+        url: `${base}/chapter/${match[1]}`,
+        lastUpdated: match[3] || undefined,
+      });
+    }
+
+    if (!found) {
       const $ = cheerio.load(html);
-
-      const slugMatch = mangaUrl.match(/\/series\/([^/]+)/);
-      const slug = slugMatch ? slugMatch[1] : "";
-
-      $("div.mt-4 img[alt^='Chapter']").each((_: number, element: any) => {
-        const $img = $(element);
-        const altText = $img.attr("alt") || "";
-
-        const chapterMatch = altText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-        if (!chapterMatch) return;
-
-        const chapterNumber = parseFloat(chapterMatch[1]);
-
-        const $container = $img.closest("div.relative");
-        const hasLockIcon =
-          $container.find("div.bg-black\\/50 svg, div[class*='bg-black/50'] svg")
-            .length > 0;
-
-        if (hasLockIcon) {
-          return;
-        }
-
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-
-          const fullUrl = `${this.BASE_URL}/series/${slug}/chapter-${chapterNumber}`;
-
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: `Chapter ${chapterNumber}`,
-            url: fullUrl,
-          });
+      $("a[href]").each((_, element) => {
+        const href = $(element).attr("href") || "";
+        const match = href.match(/\/chapter\/(\d+(?:\.\d+)?)\/?$/);
+        if (!match || !href.includes(seriesPath)) return;
+        const number = parseFloat(match[1]);
+        if (!byNumber.has(number)) {
+          byNumber.set(number, { number, url: `${base}/chapter/${match[1]}` });
         }
       });
+    }
+
+    return Array.from(byNumber.values()).sort((a, b) => a.number - b.number);
+  }
+
+  async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
+    try {
+      const html = await this.fetchWithRetry(mangaUrl);
+      const pathMatch = mangaUrl.match(/\/series\/[^/]+\/[^/?#]+/);
+      if (!pathMatch) {
+        throw new Error(`Unrecognized series URL: ${mangaUrl}`);
+      }
+
+      return this.parseChapters(html, pathMatch[0]).map((chapter) => ({
+        id: `${chapter.number}`,
+        number: chapter.number,
+        title: `Chapter ${chapter.number}`,
+        url: chapter.url,
+        lastUpdated: chapter.lastUpdated,
+      }));
     } catch (error) {
       console.error("[Diva Scans] Chapter fetch error:", error);
       throw error;
     }
-
-    return chapters.sort((a, b) => a.number - b.number);
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.API_URL}/api/query?page=1&perPage=5&searchTerm=${encodeURIComponent(query)}`;
-
-    const response = await fetch(searchUrl, {
-      headers: {
-        "User-Agent": this.config.userAgent,
-        Accept: "application/json",
-      },
-    });
+    const response = await fetch(
+      `${this.BASE_URL}/api/search?q=${encodeURIComponent(query)}`,
+      {
+        headers: {
+          "User-Agent": this.config.userAgent,
+          Accept: "application/json",
+          Referer: `${this.BASE_URL}/`,
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const data: DivaSearchResponse = await response.json();
+    const data: { series?: DivaSearchSeries[] } = await response.json();
+    const series = (data.series || []).slice(0, 5);
 
-    return data.posts.map((post) => {
-      let latestChapter = 0;
-      for (const chapter of post.chapters) {
-        if (!chapter.isLocked && chapter.isAccessible) {
-          if (chapter.number > latestChapter) {
-            latestChapter = chapter.number;
+    return Promise.all(
+      series.map(async (item): Promise<SearchResult> => {
+        const slug = item.urlSlug || item.slug;
+        const seriesPath = `/series/comic/${slug}`;
+        const url = `${this.BASE_URL}${seriesPath}`;
+
+        let latestChapter = 0;
+        let lastUpdated = "";
+        let lastUpdatedTimestamp: number | undefined;
+
+        try {
+          const html = await this.fetchWithRetry(url);
+          const chapters = this.parseChapters(html, seriesPath);
+          const latest = chapters[chapters.length - 1];
+          if (latest) {
+            latestChapter = latest.number;
+            if (latest.lastUpdated) {
+              const parsed = new Date(latest.lastUpdated);
+              if (!isNaN(parsed.getTime())) {
+                lastUpdatedTimestamp = parsed.getTime();
+                lastUpdated = parsed.toLocaleDateString();
+              }
+            }
           }
+        } catch (error) {
+          console.error("[Diva Scans] Latest chapter fetch error:", error);
         }
-      }
 
-      let lastUpdatedTimestamp: number | undefined;
-      if (post.updatedAt) {
-        const parsedDate = new Date(post.updatedAt);
-        if (!isNaN(parsedDate.getTime())) {
-          lastUpdatedTimestamp = parsedDate.getTime();
+        let coverImage: string | undefined;
+        if (item.coverImage) {
+          coverImage = item.coverImage.startsWith("http")
+            ? item.coverImage
+            : `${this.BASE_URL}${item.coverImage}`;
         }
-      }
 
-      return {
-        id: post.slug,
-        title: post.postTitle,
-        url: `${this.BASE_URL}/series/${post.slug}`,
-        coverImage: post.featuredImage,
-        latestChapter,
-        lastUpdated: post.updatedAt
-          ? new Date(post.updatedAt).toLocaleDateString()
-          : "",
-        lastUpdatedTimestamp,
-        rating: post.averageRating,
-      };
-    });
+        return {
+          id: slug,
+          title: item.title,
+          url,
+          coverImage,
+          latestChapter,
+          lastUpdated,
+          lastUpdatedTimestamp,
+          rating: item.rating ?? undefined,
+        };
+      })
+    );
   }
 }
