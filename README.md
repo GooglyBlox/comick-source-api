@@ -64,6 +64,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | MKissa             | `mkissa`             | https://mkissa.to               | Active   |
 | NovelCool          | `novelcool`          | https://www.novelcool.com       | Active   |
 | Nyx Scans          | `nyx-scans`          | https://nyxscans.com            | Active   |
+| Orion Scans        | `orion-scans`        | https://orion-scans.com         | Active   |
 | Philia Scans       | `philia-scans`       | https://philiascans.org         | Unstable |
 | Project Suki       | `project-suki`       | https://projectsuki.com         | Active   |
 | Qi Scans           | `qi-scans`           | https://qimanga.com             | Unstable |
