@@ -13,6 +13,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Athrea Scans       | `athrea-scans`       | https://athreascans.com     | Active   |
 | AtsuMoe            | `atsumoe`            | https://atsumoe.com         | Unstable |
 | Bato               | `bato`               | https://bato.to             | Shutdown |
+| Chikari            | `chikari`            | https://chikari.moe         | Active   |
 | Comix              | `comix`              | https://comix.to            | Unstable |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
 | Diva Scans         | `diva-scans`         | https://divascans.org       | Unstable |

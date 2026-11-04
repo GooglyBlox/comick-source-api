@@ -74,6 +74,7 @@ import { MangaballScraper } from "./mangaball";
 import { SwarmScraper } from "./swarm";
 import { HiveToonScraper } from "./hivetoons";
 import { MKissaScraper } from "./mkissa";
+import { ChikariScraper } from "./chikari";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -152,6 +153,7 @@ const scrapers: BaseScraper[] = [
   new SwarmScraper(),
   new HiveToonScraper(),
   new MKissaScraper(),
+  new ChikariScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -264,4 +266,5 @@ export {
   SwarmScraper,
   HiveToonScraper,
   MKissaScraper,
+  ChikariScraper,
 };
