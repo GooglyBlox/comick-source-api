@@ -1,10 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
+interface ElfSearchSeries {
+  id: string;
+  title: string;
+  slug: string;
+  urlSlug?: string;
+  coverImage?: string | null;
+  rating?: number | null;
+}
+
+interface ElfSeriesChapter {
+  number: number;
+  url: string;
+  lastUpdated?: string;
+}
+
 export class ElfToonScraper extends BaseScraper {
-  private readonly BASE_URL = "https://elftoon.com";
+  private readonly BASE_URL = "https://elftoon.net";
 
   getName(): string {
     return "Elf Toon";
@@ -19,7 +33,7 @@ export class ElfToonScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("elftoon.com");
+    return url.includes("elftoon.net") || url.includes("elftoon.com");
   }
 
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
@@ -27,211 +41,137 @@ export class ElfToonScraper extends BaseScraper {
     const $ = cheerio.load(html);
 
     const title =
-      $(".post-title h1").first().text().trim() ||
       $("h1").first().text().trim() ||
       $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/manga\/([^/]+)/);
+    const urlMatch = url.match(/\/series\/[^/]+\/([^/?#]+)/);
     const id = urlMatch ? urlMatch[1] : Date.now().toString();
 
     return { title, id };
   }
 
-  async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
+  private parseChapters(html: string, seriesPath: string): ElfSeriesChapter[] {
+    const byNumber = new Map<number, ElfSeriesChapter>();
+    const base = `${this.BASE_URL}${seriesPath}`;
 
-    try {
-      const html = await this.fetchWithRetry(mangaUrl);
+    const pattern =
+      /\\"number\\":(\d+(?:\.\d+)?),[^{}]*?\\"isLocked\\":(true|false),[^{}]*?\\"publishedAt\\":(?:null|\\"([^"\\]*)\\")[^{}]*?\\"hasAccess\\":(true|false)/g;
+    let found = false;
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(html)) !== null) {
+      found = true;
+      const number = parseFloat(match[1]);
+      if (match[2] === "true" || match[4] !== "true") continue;
+      if (byNumber.has(number)) continue;
+      byNumber.set(number, {
+        number,
+        url: `${base}/chapter/${match[1]}`,
+        lastUpdated: match[3] || undefined,
+      });
+    }
+
+    if (!found) {
       const $ = cheerio.load(html);
-
-      $(".eplister ul li, #chapterlist ul li").each((_: number, element: any) => {
-        const $chapter = $(element);
-        const $link = $chapter.find("a").first();
-        const href = $link.attr("href");
-
-        const isLocked = $link.attr("data-bs-toggle") === "modal" ||
-                        href?.includes("/login/") ||
-                        !href ||
-                        href.includes("#");
-
-        if (isLocked) {
-          return;
-        }
-
-        const chapterNumAttr = $chapter.attr("data-num");
-        const chapterText = $link.find(".chapternum").text().trim();
-        const dateText = $link.find(".chapterdate").text().trim();
-
-        let chapterNumber: number;
-        if (chapterNumAttr) {
-          chapterNumber = parseFloat(chapterNumAttr);
-        } else {
-          chapterNumber = this.extractChapterNumber(href);
-        }
-
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-
-          const fullUrl = href.startsWith("http")
-            ? href
-            : `${this.BASE_URL}${href}`;
-
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: chapterText || `Chapter ${chapterNumber}`,
-            url: fullUrl,
-            lastUpdated: dateText || undefined,
-          });
+      $("a[href]").each((_, element) => {
+        const href = $(element).attr("href") || "";
+        const match = href.match(/\/chapter\/(\d+(?:\.\d+)?)\/?$/);
+        if (!match || !href.includes(seriesPath)) return;
+        const number = parseFloat(match[1]);
+        if (!byNumber.has(number)) {
+          byNumber.set(number, { number, url: `${base}/chapter/${match[1]}` });
         }
       });
+    }
+
+    return Array.from(byNumber.values()).sort((a, b) => a.number - b.number);
+  }
+
+  async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
+    try {
+      const html = await this.fetchWithRetry(mangaUrl);
+      const pathMatch = mangaUrl.match(/\/series\/[^/]+\/[^/?#]+/);
+      if (!pathMatch) {
+        throw new Error(`Unrecognized series URL: ${mangaUrl}`);
+      }
+
+      return this.parseChapters(html, pathMatch[0]).map((chapter) => ({
+        id: `${chapter.number}`,
+        number: chapter.number,
+        title: `Chapter ${chapter.number}`,
+        url: chapter.url,
+        lastUpdated: chapter.lastUpdated,
+      }));
     } catch (error) {
       console.error("[ElfToon] Chapter fetch error:", error);
       throw error;
     }
-
-    return chapters.sort((a, b) => a.number - b.number);
-  }
-
-  protected extractChapterNumber(chapterUrl: string): number {
-    const patterns = [
-      /-chapter[/-](\d+)(?:[.-](\d+))?/i,
-      /chapter[/-](\d+)(?:[.-](\d+))?$/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        const mainNumber = parseInt(match[1], 10);
-        const decimalPart = match[2] ? parseInt(match[2], 10) : 0;
-
-        if (decimalPart > 0) {
-          return mainNumber + decimalPart / 10;
-        }
-        return mainNumber;
-      }
-    }
-
-    return -1;
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.BASE_URL}/?s=${encodeURIComponent(query)}`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
+    const response = await fetch(
+      `${this.BASE_URL}/api/search?q=${encodeURIComponent(query)}`,
+      {
+        headers: {
+          "User-Agent": this.config.userAgent,
+          Accept: "application/json",
+          Referer: `${this.BASE_URL}/`,
+        },
+      }
+    );
 
-    const matchedSeries: Array<{
-      id: string;
-      title: string;
-      url: string;
-      coverImage?: string;
-      rating?: number;
-    }> = [];
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
 
-    $(".listupd .bs .bsx").each((_, element) => {
-      const $item = $(element);
-      const link = $item.find("a").first();
-      const url = link.attr("href");
-      const title = link.attr("title") || $item.find(".tt").text().trim();
+    const data: { series?: ElfSearchSeries[] } = await response.json();
+    const series = (data.series || []).slice(0, 5);
 
-      if (!url) return;
-
-      const slugMatch = url.match(/\/manga\/([^/]+)/);
-      const id = slugMatch ? slugMatch[1] : "";
-
-      const coverImg = $item.find("img.ts-post-image").first();
-      const coverImage = coverImg.attr("src") || coverImg.attr("data-src");
-
-      const ratingDiv = $item.find(".numscore").first();
-      const ratingText = ratingDiv.text().trim();
-      const rating = ratingText ? parseFloat(ratingText) : undefined;
-
-      matchedSeries.push({
-        id,
-        title,
-        url,
-        coverImage: coverImage?.startsWith("http")
-          ? coverImage
-          : coverImage
-            ? `${this.BASE_URL}${coverImage}`
-            : undefined,
-        rating,
-      });
-    });
-
-    const limitedSeries = matchedSeries.slice(0, 5);
-
-    const results: SearchResult[] = [];
-    for (const series of limitedSeries) {
-      try {
-        const seriesHtml = await this.fetchWithRetry(series.url);
-        const $series = cheerio.load(seriesHtml);
+    return Promise.all(
+      series.map(async (item): Promise<SearchResult> => {
+        const slug = item.urlSlug || item.slug;
+        const seriesPath = `/series/comic/${slug}`;
+        const url = `${this.BASE_URL}${seriesPath}`;
 
         let latestChapter = 0;
-        let lastUpdatedText = "";
+        let lastUpdated = "";
+        let lastUpdatedTimestamp: number | undefined;
 
-        $series(".eplister ul li, #chapterlist ul li").each((_, el) => {
-          const $ch = $series(el);
-          const $link = $ch.find("a").first();
-          const href = $link.attr("href");
-
-          const isLocked = $link.attr("data-bs-toggle") === "modal" ||
-                          href?.includes("/login/") ||
-                          !href ||
-                          href.includes("#");
-
-          if (!isLocked) {
-            const chapterNumAttr = $ch.attr("data-num");
-            if (chapterNumAttr) {
-              const num = parseFloat(chapterNumAttr);
-              if (num > latestChapter) {
-                latestChapter = num;
-                lastUpdatedText = $link.find(".chapterdate").text().trim();
+        try {
+          const html = await this.fetchWithRetry(url);
+          const chapters = this.parseChapters(html, seriesPath);
+          const latest = chapters[chapters.length - 1];
+          if (latest) {
+            latestChapter = latest.number;
+            if (latest.lastUpdated) {
+              const parsed = new Date(latest.lastUpdated);
+              if (!isNaN(parsed.getTime())) {
+                lastUpdatedTimestamp = parsed.getTime();
+                lastUpdated = parsed.toLocaleDateString();
               }
             }
           }
-        });
-
-        let lastUpdatedTimestamp: number | undefined;
-        if (lastUpdatedText) {
-          try {
-            const parsedDate = new Date(lastUpdatedText);
-            if (!isNaN(parsedDate.getTime())) {
-              lastUpdatedTimestamp = parsedDate.getTime();
-            }
-          } catch {
-            // Ignore date parse errors
-          }
+        } catch (error) {
+          console.error("[ElfToon] Latest chapter fetch error:", error);
         }
 
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter,
-          lastUpdated: lastUpdatedText,
-          lastUpdatedTimestamp,
-          rating: series.rating,
-        });
-      } catch (error) {
-        console.error(
-          `[ElfToon] Failed to fetch chapter list for ${series.title}:`,
-          error
-        );
-        results.push({
-          id: series.id,
-          title: series.title,
-          url: series.url,
-          coverImage: series.coverImage,
-          latestChapter: 0,
-          lastUpdated: "",
-          rating: series.rating,
-        });
-      }
-    }
+        let coverImage: string | undefined;
+        if (item.coverImage) {
+          coverImage = item.coverImage.startsWith("http")
+            ? item.coverImage
+            : `${this.BASE_URL}${item.coverImage}`;
+        }
 
-    return results;
+        return {
+          id: slug,
+          title: item.title,
+          url,
+          coverImage,
+          latestChapter,
+          lastUpdated,
+          lastUpdatedTimestamp,
+          rating: item.rating ?? undefined,
+        };
+      })
+    );
   }
 }
