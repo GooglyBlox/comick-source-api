@@ -37,6 +37,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Kayn Scans         | `kayn-scans`         | https://kaynscans.com           | Active   |
 | KDT Scans          | `kdt-scans`          | https://silentquill.net         | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com           | Active   |
+| Kero Scans         | `kero-scans`         | https://keroscans.net           | Active   |
 | KS Group           | `ks-group`           | https://ksgroupscans.com        | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com           | Active   |
 | LagoonScans        | `lagoonscans`        | https://lagoonscans.com         | Active   |
