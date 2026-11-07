@@ -6,7 +6,7 @@ Next.js API for scraping manga metadata from multiple sources.
 
 | Source             | ID                   | Base URL                    | Status   |
 | ------------------ | -------------------- | --------------------------- | -------- |
-| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Active   |
+| Arven Comics       | `arven-comics`       | https://arvencomics.com     | Unstable |
 | Arya Scans         | `arya-scans`         | https://brainrotcomics.com  | Unstable |
 | Asmodeus Scans     | `asmodeus-scans`     | https://asmotoon.com        | Active   |
 | AsuraScan          | `asurascan`          | https://asurascans.com      | Active   |
@@ -45,7 +45,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Mangasushi         | `mangasushi`         | https://mangasushi.org      | Active   |
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Active   |
-| Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Unstable |
+| Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
 | ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
