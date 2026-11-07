@@ -1,15 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class SilentQuillScraper extends BaseScraper {
+  private readonly BASE_URL = "https://silentquill.net";
+
   getName(): string {
-    return "KDT Scans"; // aka "SilentQuill"? not super sure what name they go by
+    return "KDT Scans";
   }
 
   getBaseUrl(): string {
-    return "https://www.silentquill.net";
+    return this.BASE_URL;
   }
 
   getType(): SourceType {
@@ -20,140 +21,114 @@ export class SilentQuillScraper extends BaseScraper {
     return url.includes("silentquill.net");
   }
 
+  private normalizeUrl(url: string): string {
+    return url.replace(/^(https?:\/\/)www\.silentquill\.net/i, "$1silentquill.net");
+  }
+
+  private extractSlug(url: string): string | null {
+    const match = url.match(/silentquill\.net\/series\/([^/?#]+)/i);
+    return match ? match[1] : null;
+  }
+
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
-    const html = await this.fetchWithRetry(url);
+    const slug = this.extractSlug(url);
+    const html = await this.fetchWithRetry(this.normalizeUrl(url));
     const $ = cheerio.load(html);
 
     const title =
-      $(".entry-title").first().text().trim() ||
       $("h1").first().text().trim() ||
-      $("title").text().split(" - ")[0].trim();
+      $("title").text().split(/\s[-|]\s/)[0].trim();
 
-    const urlMatch = url.match(/silentquill\.net\/([^/]+)\/?$/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
+    return { title, id: slug || Date.now().toString() };
+  }
 
-    return { title, id };
+  private parseChapters(html: string, slug: string): ScrapedChapter[] {
+    const pattern =
+      /\\"slug\\":\\"([^"\\]+)\\",\\"chapter_no\\":\\"([^"\\]+)\\"(?:,\\"subtitle\\":(?:null|\\"([^"\\]*)\\"))?/g;
+    const chapters = new Map<number, ScrapedChapter>();
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(html)) !== null) {
+      const [, chapterSlug, chapterNo, subtitle] = match;
+      if (!chapterSlug.startsWith(`${slug}-`)) continue;
+
+      const number = parseFloat(chapterNo);
+      if (isNaN(number) || number < 0 || chapters.has(number)) continue;
+
+      chapters.set(number, {
+        id: `${number}`,
+        number,
+        title: subtitle ? `Chapter ${number} - ${subtitle}` : `Chapter ${number}`,
+        url: `${this.BASE_URL}/${chapterSlug}/`,
+      });
+    }
+
+    return Array.from(chapters.values()).sort((a, b) => a.number - b.number);
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
+    const slug = this.extractSlug(mangaUrl);
+    if (!slug) {
+      throw new Error(`Invalid KDT Scans URL: ${mangaUrl}`);
+    }
 
     try {
-      const html = await this.fetchWithRetry(mangaUrl);
-      const $ = cheerio.load(html);
-
-      $(".eplister#chapterlist ul li").each((_: number, element: any) => {
-        const $item = $(element);
-        const $link = $item.find(".eph-num a").first();
-        const href = $link.attr("href");
-
-        if (!href) return;
-
-        const chapterText = $link.find(".chapternum").text().trim();
-        const dateText = $link.find(".chapterdate").text().trim();
-
-        const chapterNumber = this.extractChapterNumber(href, chapterText);
-
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: chapterText,
-            url: href,
-            lastUpdated: dateText || undefined,
-          });
-        }
-      });
+      const html = await this.fetchWithRetry(`${this.BASE_URL}/series/${slug}/`);
+      return this.parseChapters(html, slug);
     } catch (error) {
       console.error("[SilentQuill] Chapter fetch error:", error);
+      throw error;
     }
-
-    return chapters.sort((a, b) => a.number - b.number);
-  }
-
-  protected extractChapterNumber(chapterUrl: string, chapterText?: string): number {
-    if (chapterText) {
-      const textMatch = chapterText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-      if (textMatch) {
-        return parseFloat(textMatch[1]);
-      }
-    }
-
-    const patterns = [
-      /chapter[/-](\d+(?:\.\d+)?)/i,
-      /ch[/-](\d+(?:\.\d+)?)/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        return parseFloat(match[1]);
-      }
-    }
-
-    return -1;
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.getBaseUrl()}/?s=${encodeURIComponent(query)}`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
-    const results: SearchResult[] = [];
-
-    const items = $(".listupd .bs .bsx").slice(0, 5);
-
-    for (let i = 0; i < items.length; i++) {
-      const element = items[i];
-      const $item = $(element);
-
-      const $link = $item.find("a").first();
-      const url = $link.attr("href");
-      if (!url) continue;
-
-      const title = $item.find(".bigor .tt").text().trim();
-      if (!title) continue;
-
-      const urlMatch = url.match(/silentquill\.net\/([^/]+)\/?$/);
-      const id = urlMatch ? urlMatch[1] : "";
-
-      const $img = $item.find("img").first();
-      const coverImage = $img.attr("src");
-
-      const latestChapterText = $item.find(".bigor .epxs").text().trim();
-      const chapterMatch = latestChapterText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
-
-      const ratingText = $item.find(".numscore").text().trim();
-      const rating = ratingText ? parseFloat(ratingText) : undefined;
-
-      let lastUpdated = "";
-      try {
-        const chapters = await this.getChapterList(url);
-        if (chapters.length > 0) {
-          const mostRecentChapter = chapters[chapters.length - 1];
-          lastUpdated = mostRecentChapter.lastUpdated || "";
+    try {
+      const response = await fetch(
+        `${this.BASE_URL}/api/suggest/?q=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            "User-Agent": this.config.userAgent,
+            Accept: "application/json",
+            Referer: `${this.BASE_URL}/`,
+          },
         }
-      } catch (error) {
-        console.error(`[SilentQuill] Error fetching chapters for ${url}:`, error);
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      results.push({
-        id,
-        title,
-        url,
-        coverImage: coverImage?.startsWith("http")
-          ? coverImage
-          : coverImage
-            ? `${this.getBaseUrl()}${coverImage}`
-            : undefined,
-        latestChapter,
-        lastUpdated,
-        rating,
-      });
-    }
+      const data = await response.json();
+      const items: Array<{ slug: string; title: string; cover_url?: string }> =
+        data.items || [];
 
-    return results;
+      return await Promise.all(
+        items.slice(0, 5).map(async (item) => {
+          const url = `${this.BASE_URL}/series/${item.slug}/`;
+          let latestChapter = 0;
+
+          try {
+            const chapters = await this.getChapterList(url);
+            if (chapters.length > 0) {
+              latestChapter = chapters[chapters.length - 1].number;
+            }
+          } catch (error) {
+            console.error(`[SilentQuill] Error fetching chapters for ${url}:`, error);
+          }
+
+          return {
+            id: item.slug,
+            title: item.title,
+            url,
+            coverImage: item.cover_url,
+            latestChapter,
+            lastUpdated: "",
+          };
+        })
+      );
+    } catch (error) {
+      console.error("[SilentQuill] Search error:", error);
+      throw error;
+    }
   }
 }
