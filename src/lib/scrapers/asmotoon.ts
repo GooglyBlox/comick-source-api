@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
@@ -22,6 +21,76 @@ export class AsmotoonScraper extends BaseScraper {
     return url.includes("asmotoon.com");
   }
 
+  private async fetchJson<T>(url: string): Promise<T> {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": this.config.userAgent,
+        Accept: "application/json, text/plain, */*",
+        Referer: `${this.BASE_URL}/`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private absoluteUrl(href: string): string {
+    return href.startsWith("http") ? href : `${this.BASE_URL}${href}`;
+  }
+
+  private slugFromUrl(url: string): string {
+    const path = url.replace(/^https?:\/\/[^/]+/, "").split(/[?#]/)[0];
+    return path.replace(/^\/+|\/+$/g, "").replace(/^series\//, "");
+  }
+
+  private async fetchChapters(seriesUrl: string): Promise<ScrapedChapter[]> {
+    const html = await this.fetchWithRetry(seriesUrl);
+    const $ = cheerio.load(html);
+    const list = $("#chapters-list").first();
+    const uid = list.attr("data-series-uid");
+    const slug = list.attr("data-series-slug");
+
+    if (!uid || !slug) return [];
+
+    const data = await this.fetchJson<{ rows_html?: string }>(
+      `${this.BASE_URL}/?_chapters_html=1&series_uid=${encodeURIComponent(uid)}&series_slug=${encodeURIComponent(slug)}`,
+    );
+    if (!data.rows_html) return [];
+
+    const $rows = cheerio.load(data.rows_html);
+    const chapters: ScrapedChapter[] = [];
+    const seenChapterNumbers = new Set<number>();
+
+    $rows("a.chapter-row").each((_, element) => {
+      const $row = $rows(element);
+      if ($row.attr("data-ch-locked") === "1") return;
+
+      const href = $row.attr("href") || $row.attr("data-ch-url");
+      if (!href) return;
+
+      const label = ($row.attr("data-ch-label") || "").trim();
+      const chapterNumber = this.extractChapterNumber(href, label);
+
+      if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
+        seenChapterNumbers.add(chapterNumber);
+        const dateText = $row.find(".ch-date-row span").first().text().trim();
+
+        chapters.push({
+          id: `${chapterNumber}`,
+          number: chapterNumber,
+          title: label || `Chapter ${chapterNumber}`,
+          url: this.absoluteUrl(href),
+          lastUpdated: dateText || undefined,
+        });
+      }
+    });
+
+    return chapters.sort((a, b) => a.number - b.number);
+  }
+
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
     const html = await this.fetchWithRetry(url);
     const $ = cheerio.load(html);
@@ -30,58 +99,16 @@ export class AsmotoonScraper extends BaseScraper {
       $("h1").first().text().trim() ||
       $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/series\/([^/]+)/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
-
-    return { title, id };
+    return { title, id: this.slugFromUrl(url) || Date.now().toString() };
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
-
     try {
-      const html = await this.fetchWithRetry(mangaUrl);
-      const $ = cheerio.load(html);
-
-      $("#chapters > a").each((_: number, element: any) => {
-        const $link = $(element);
-        const href = $link.attr("href");
-
-        if (!href) return;
-
-        const hasLockOverlay = $link.find(".bg-black\\/70").length > 0;
-        if (hasLockOverlay) {
-          return;
-        }
-
-        const chapterTitle = $link.attr("alt") || $link.attr("title") || "";
-        const dateText = $link.attr("d") || "";
-
-        const chapterNumber = this.extractChapterNumber(href, chapterTitle);
-
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-
-          const fullUrl = href.startsWith("http")
-            ? href
-            : `${this.BASE_URL}${href}`;
-
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: chapterTitle || `Chapter ${chapterNumber}`,
-            url: fullUrl,
-            lastUpdated: dateText || undefined,
-          });
-        }
-      });
+      return await this.fetchChapters(mangaUrl);
     } catch (error) {
       console.error("[Asmotoon] Chapter fetch error:", error);
       throw error;
     }
-
-    return chapters.sort((a, b) => a.number - b.number);
   }
 
   protected extractChapterNumber(chapterUrl: string, chapterText?: string): number {
@@ -92,16 +119,9 @@ export class AsmotoonScraper extends BaseScraper {
       }
     }
 
-    const patterns = [
-      /chapter[/-](\d+(?:\.\d+)?)/i,
-      /ch[/-](\d+(?:\.\d+)?)/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        return parseFloat(match[1]);
-      }
+    const match = chapterUrl.match(/chapter[/-](\d+(?:[.-]\d+)?)\/?$/i);
+    if (match) {
+      return parseFloat(match[1].replace(/-/g, "."));
     }
 
     return -1;
@@ -109,125 +129,47 @@ export class AsmotoonScraper extends BaseScraper {
 
   async search(query: string): Promise<SearchResult[]> {
     try {
-      const searchUrl = `${this.BASE_URL}/series?q=${encodeURIComponent(query)}`;
-      const html = await this.fetchWithRetry(searchUrl);
-      const $ = cheerio.load(html);
+      const data = await this.fetchJson<{
+        items?: Array<{ title: string; url: string; cover?: string }>;
+      }>(`${this.BASE_URL}/?_ajax=suggest&q=${encodeURIComponent(query)}`);
 
-      const queryLower = query.toLowerCase();
-      const matchedSeries: Array<{
-        id: string;
-        title: string;
-        altTitle: string;
-        url: string;
-        coverImage?: string;
-      }> = [];
+      const items = (data.items || []).slice(0, 5);
 
-      $("#searched_series_page > button").each((_, element) => {
-        const $button = $(element);
-        const id = $button.attr("id");
-        const title = $button.attr("alt") || "";
-        const fullTitle = $button.attr("title") || "";
-        
-        if (!id || !title) return;
-
-        const titleMatch = title.toLowerCase().includes(queryLower);
-        const altTitleMatch = fullTitle.toLowerCase().includes(queryLower);
-
-        if (titleMatch || altTitleMatch) {
-          const $link = $button.find("a").first();
-          const href = $link.attr("href");
-          
-          if (!href) return;
-
-          const $bgDiv = $link.find(".bg-white\\/10.bg-no-repeat.bg-cover").first();
-          const styleAttr = $bgDiv.attr("style") || "";
-          const imageMatch = styleAttr.match(/background-image:url\(([^)]+)\)/);
-          const coverImage = imageMatch ? imageMatch[1] : undefined;
-
-          const fullUrl = href.startsWith("http")
-            ? href
-            : `${this.BASE_URL}${href}`;
-
-          matchedSeries.push({
-            id,
-            title,
-            altTitle: fullTitle,
-            url: fullUrl,
-            coverImage,
-          });
-        }
-      });
-
-      const topResults = matchedSeries.slice(0, 5);
-
-      const results: SearchResult[] = [];
-      for (const series of topResults) {
-        try {
-          const seriesHtml = await this.fetchWithRetry(series.url);
-          const $series = cheerio.load(seriesHtml);
-
-          let latestChapter = 0;
-          let lastUpdatedText = "";
-
-          $series("#chapters > a").each((_, el) => {
-            const $ch = $series(el);
-            const hasLockOverlay = $ch.find(".bg-black\\/70").length > 0;
-            
-            if (hasLockOverlay) {
-              return;
-            }
-
-            const chapterTitle = $ch.attr("alt") || $ch.attr("title") || "";
-            const dateText = $ch.attr("d") || "";
-            const href = $ch.attr("href") || "";
-
-            if (href) {
-              const chapterNum = this.extractChapterNumber(href, chapterTitle);
-              if (chapterNum > latestChapter) {
-                latestChapter = chapterNum;
-                lastUpdatedText = dateText;
-              }
-            }
-          });
-
-          let lastUpdatedTimestamp: number | undefined;
-          if (lastUpdatedText) {
-            try {
-              const parsedDate = new Date(lastUpdatedText);
-              if (!isNaN(parsedDate.getTime())) {
-                lastUpdatedTimestamp = parsedDate.getTime();
-              }
-            } catch {
-              // Ignore date parse errors
-            }
-          }
-
-          results.push({
-            id: series.id,
-            title: series.title,
-            url: series.url,
-            coverImage: series.coverImage,
-            latestChapter,
-            lastUpdated: lastUpdatedText,
-            lastUpdatedTimestamp,
-          });
-        } catch (error) {
-          console.error(
-            `[Asmotoon] Failed to fetch chapter list for ${series.title}:`,
-            error
-          );
-          results.push({
-            id: series.id,
-            title: series.title,
-            url: series.url,
-            coverImage: series.coverImage,
+      return await Promise.all(
+        items.map(async (item) => {
+          const url = this.absoluteUrl(item.url);
+          const base: SearchResult = {
+            id: this.slugFromUrl(url),
+            title: item.title,
+            url,
+            coverImage: item.cover?.replace("&w=20&q=1", "&w=300&q=75"),
             latestChapter: 0,
             lastUpdated: "",
-          });
-        }
-      }
+          };
 
-      return results;
+          try {
+            const chapters = await this.fetchChapters(url);
+            const latest = chapters[chapters.length - 1];
+            if (!latest) return base;
+
+            const timestamp = latest.lastUpdated
+              ? new Date(latest.lastUpdated).getTime()
+              : NaN;
+            return {
+              ...base,
+              latestChapter: latest.number,
+              lastUpdated: latest.lastUpdated || "",
+              lastUpdatedTimestamp: isNaN(timestamp) ? undefined : timestamp,
+            };
+          } catch (error) {
+            console.error(
+              `[Asmotoon] Failed to fetch chapter list for ${item.title}:`,
+              error,
+            );
+            return base;
+          }
+        }),
+      );
     } catch (error) {
       console.error("[Asmotoon] Search error:", error);
       throw error;
