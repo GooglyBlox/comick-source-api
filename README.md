@@ -52,7 +52,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Mangataro          | `mangataro`          | https://mangataro.org       | Active   |
 | MangaYY            | `mangayy`            | https://mangayy.org         | Shutdown |
 | Manhuaplus         | `manhuaplus`         | https://manhuaplus.top      | Active   |
-| ManhuaUS           | `manhuaus`           | https://manhuaus.com        | Unstable |
+| ManhuaUS           | `manhuaus`           | https://manhuaus.club       | Unstable |
 | Mgeko              | `mgeko`              | https://mgeko.cc            | Active   |
 | Mist Scans         | `mist-scans`         | https://mistscans.com       | Active   |
 | MKissa             | `mkissa`             | https://mkissa.to           | Active   |

@@ -4,19 +4,47 @@ import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult } from "@/types";
 
 export class ManhuausScraper extends BaseScraper {
+  private readonly BASE_URL = "https://manhuaus.club";
+
   getName(): string {
     return "Manhuaus";
   }
 
   getBaseUrl(): string {
-    return "https://manhuaus.com";
+    return this.BASE_URL;
   }
 
   canHandle(url: string): boolean {
-    return url.includes("manhuaus.com");
+    return url.includes("manhuaus.com") || url.includes("manhuaus.club");
   }
 
-  async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
+  private async resolveUrl(url: string): Promise<string> {
+    if (!url.includes("manhuaus.com")) return url;
+
+    const slugMatch = url.match(/\/manga\/([^/?#]+)/);
+    if (!slugMatch) return url.replace("manhuaus.com", "manhuaus.club");
+
+    const slug = slugMatch[1].toLowerCase();
+    const normalize = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/['’]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    try {
+      const results = await this.search(slug.replace(/-/g, " "));
+      const match = results.find((result) => normalize(result.title) === slug);
+      if (match) return match.url;
+    } catch (error) {
+      console.error("[Manhuaus] Legacy URL resolve error:", error);
+    }
+
+    return url.replace("manhuaus.com", "manhuaus.club");
+  }
+
+  async extractMangaInfo(inputUrl: string): Promise<{ title: string; id: string }> {
+    const url = await this.resolveUrl(inputUrl);
     const html = await this.fetchWithRetry(url);
     const $ = cheerio.load(html);
 
@@ -31,7 +59,8 @@ export class ManhuausScraper extends BaseScraper {
     return { title, id };
   }
 
-  async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
+  async getChapterList(inputUrl: string): Promise<ScrapedChapter[]> {
+    const mangaUrl = await this.resolveUrl(inputUrl);
     const chapters: ScrapedChapter[] = [];
     const seenChapterNumbers = new Set<number>();
 
@@ -66,7 +95,7 @@ export class ManhuausScraper extends BaseScraper {
         if (href) {
           const fullUrl = href.startsWith("http")
             ? href
-            : `https://manhuaus.com${href}`;
+            : `${this.BASE_URL}${href}`;
           const chapterNumber = this.extractChapterNumber(fullUrl, chapterText);
 
           if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
@@ -123,7 +152,7 @@ export class ManhuausScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `https://manhuaus.com/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
+    const searchUrl = `${this.BASE_URL}/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
     const html = await this.fetchWithRetry(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
@@ -166,7 +195,7 @@ export class ManhuausScraper extends BaseScraper {
         coverImage: coverImage?.startsWith("http")
           ? coverImage
           : coverImage
-            ? `https://manhuaus.com${coverImage}`
+            ? `${this.BASE_URL}${coverImage}`
             : undefined,
         latestChapter,
         lastUpdated,
