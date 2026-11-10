@@ -73,6 +73,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Raven Scans        | `raven-scans`        | https://ravenscans.org          | Unstable |
 | RD Scans           | `rd-scans`           | https://rdscans.com             | Active   |
 | ReiManga           | `reimanga`           | https://reimanga.net            | Active   |
+| Rinko Comics       | `rinko-comics`       | https://rinkocomics.com         | Active   |
 | Ritharscans        | `ritharscans`        | https://ritharscans.com         | Active   |
 | Rizz Fables        | `rizz-fables`        | https://rizzfables.com          | Active   |
 | Rokari Comics      | `rokari-comics`      | https://rokaricomics.com        | Active   |
