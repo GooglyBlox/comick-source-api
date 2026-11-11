@@ -78,6 +78,7 @@ import { ChikariScraper } from "./chikari";
 import { WebtoonClubScraper } from "./webtoonclub";
 import { BaeToonScraper } from "./baetoon";
 import { NyxScansScraper } from "./nyxscans";
+import { MangaKScraper } from "./mangak";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -160,6 +161,7 @@ const scrapers: BaseScraper[] = [
   new WebtoonClubScraper(),
   new BaeToonScraper(),
   new NyxScansScraper(),
+  new MangaKScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -276,4 +278,5 @@ export {
   WebtoonClubScraper,
   BaeToonScraper,
   NyxScansScraper,
+  MangaKScraper,
 };
