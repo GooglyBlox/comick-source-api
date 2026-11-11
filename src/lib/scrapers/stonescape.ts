@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as cheerio from 'cheerio';
 import { BaseScraper } from './base';
 import { ScrapedChapter, SearchResult, SourceType } from '@/types';
 
@@ -20,172 +19,114 @@ export class StonescapeScraper extends BaseScraper {
     return 'scanlator';
   }
 
+  private async fetchJson(path: string): Promise<any> {
+    const url = `${this.getBaseUrl()}${path}`;
+    let lastError: unknown;
+
+    for (let i = 0; i <= this.config.retryAttempts; i++) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': this.config.userAgent,
+            Accept: 'application/json',
+            Referer: `${this.getBaseUrl()}/`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError;
+  }
+
+  private getSlug(url: string): string {
+    const match = url.match(/\/series\/([^/?#]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+
+  private async findSeries(slug: string): Promise<any | null> {
+    const words = slug.replace(/-/g, ' ');
+    const found = await this.fetchJson(`/api/series?search=${encodeURIComponent(words)}&limit=20`);
+    const direct = (found.data || []).find((s: any) => s.slug === slug);
+    if (direct) return direct;
+
+    const all = await this.fetchJson('/api/series?limit=100');
+    return (all.data || []).find((s: any) => s.slug === slug) || null;
+  }
+
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
-    const html = await this.fetchWithRetry(url);
-    const $ = cheerio.load(html);
+    const slug = this.getSlug(url);
+    const series = slug ? await this.findSeries(slug) : null;
 
-    const title = $('.post-title h1').first().text().trim() ||
-                  $('h1').first().text().trim() ||
-                  $('title').text().split(' - ')[0].trim();
+    if (series) {
+      return { title: series.title, id: series.slug };
+    }
 
-    const urlMatch = url.match(/\/series\/([^/]+)/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
-
-    return { title, id };
+    return {
+      title: slug.replace(/-/g, ' '),
+      id: slug || Date.now().toString(),
+    };
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
-
-    const ajaxUrl = `${mangaUrl.replace(/\/$/, '')}/ajax/chapters/`;
+    const slug = this.getSlug(mangaUrl);
 
     try {
-      const response = await fetch(ajaxUrl, {
-        method: 'POST',
-        headers: {
-          'User-Agent': this.config.userAgent,
-          'X-Requested-With': 'XMLHttpRequest',
-          'Referer': mangaUrl,
-        }
-      });
-
-      let html: string;
-      if (response.ok) {
-        html = await response.text();
-      } else {
-        console.log('[Stonescape] AJAX failed, falling back to regular page');
-        html = await this.fetchWithRetry(mangaUrl);
+      const series = await this.findSeries(slug);
+      if (!series) {
+        throw new Error(`Series not found for slug ${slug}`);
       }
 
-      const $ = cheerio.load(html);
+      const data = await this.fetchJson(`/api/series/${series.seriesId}/chapters`);
+      const seen = new Set<number>();
+      const chapters: ScrapedChapter[] = [];
 
-      $('.wp-manga-chapter').each((_: number, element: any) => {
-        const $chapter = $(element);
-        const $link = $chapter.find('a').first();
-        const href = $link.attr('href');
-        const chapterText = $link.text().trim();
+      for (const chapter of data.chapters || []) {
+        if (chapter.accessMode !== 'free' || chapter.status !== 'published') continue;
 
-        if (href) {
-          const fullUrl = href.startsWith('http') ? href : `https://stonescape.xyz${href}`;
-          const chapterNumber = this.extractChapterNumber(fullUrl);
+        const number = parseFloat(chapter.chapterNumber);
+        if (!Number.isFinite(number) || number < 0 || seen.has(number)) continue;
+        seen.add(number);
 
-          if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-            seenChapterNumbers.add(chapterNumber);
-            chapters.push({
-              id: `${chapterNumber}`,
-              number: chapterNumber,
-              title: chapterText,
-              url: fullUrl,
-            });
-          } else {
-            console.log(`[Stonescape] Skipped chapter - number: ${chapterNumber}, href: ${href}, text: ${chapterText}`);
-          }
-        } else {
-          console.log(`[Stonescape] Chapter element has no href`);
-        }
-      });
+        chapters.push({
+          id: `${number}`,
+          number,
+          title: chapter.title || `Chapter ${number}`,
+          url: `${this.getBaseUrl()}/series/${series.slug}/ch-${number}`,
+          lastUpdated: chapter.publishedAt || chapter.createdAt || undefined,
+        });
+      }
+
+      return chapters.sort((a, b) => a.number - b.number);
     } catch (error) {
       console.error('[Stonescape] Chapter fetch error:', error);
-      try {
-        const html = await this.fetchWithRetry(mangaUrl);
-        const $ = cheerio.load(html);
-
-        $('.wp-manga-chapter').each((_: number, element: any) => {
-          const $chapter = $(element);
-          const $link = $chapter.find('a').first();
-          const href = $link.attr('href');
-          const chapterText = $link.text().trim();
-
-          if (href) {
-            const fullUrl = href.startsWith('http') ? href : `https://stonescape.xyz${href}`;
-            const chapterNumber = this.extractChapterNumber(fullUrl);
-
-            if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-              seenChapterNumbers.add(chapterNumber);
-              chapters.push({
-                id: `${chapterNumber}`,
-                number: chapterNumber,
-                title: chapterText,
-                url: fullUrl,
-              });
-            }
-          }
-        });
-      } catch (fallbackError) {
-        console.error('[Stonescape] Fallback chapter fetch error:', fallbackError);
-      }
+      throw error;
     }
-
-    return chapters.sort((a, b) => a.number - b.number);
-  }
-
-  protected extractChapterNumber(chapterUrl: string): number {
-    const patterns = [
-      /\/ch[/-](\d+)(?:[.-](\d+))?/i,
-      /ch[/-](\d+)(?:[.-](\d+))?$/i
-    ];
-
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        const mainNumber = parseInt(match[1], 10);
-        const decimalPart = match[2] ? parseInt(match[2], 10) : 0;
-
-        if (decimalPart > 0) {
-          return mainNumber + (decimalPart / 10);
-        }
-        return mainNumber;
-      }
-    }
-
-    return -1;
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `https://stonescape.xyz/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
-    const results: SearchResult[] = [];
+    const data = await this.fetchJson(`/api/series?search=${encodeURIComponent(query)}&limit=20`);
 
-    $('.row.c-tabs-item__content').each((_, element) => {
-      const $item = $(element);
+    return (data.data || []).map((series: any): SearchResult => {
+      const cover: string | undefined = series.coverUrl || undefined;
+      const latestChapter = parseFloat(series.latestChapter?.chapterNumber);
+      const updated: string | undefined = series.lastChapterUploadedAt || series.updatedAt || undefined;
+      const timestamp = updated ? new Date(updated).getTime() : NaN;
 
-      const titleLink = $item.find('.post-title h3 a, .post-title a').first();
-      const url = titleLink.attr('href');
-      const title = titleLink.text().trim();
-
-      if (!url) return;
-
-      const slugMatch = url.match(/\/series\/([^/]+)/);
-      const id = slugMatch ? slugMatch[1] : '';
-
-      const coverImg = $item.find('.tab-thumb img').first();
-      const coverImage = coverImg.attr('data-src') || coverImg.attr('src');
-
-      const latestChapterLink = $item.find('.latest-chap .chapter a, .latest-chap a').first();
-      const latestChapterText = latestChapterLink.text().trim();
-      const chapterMatch = latestChapterText.match(/Ch\.\s+([\d.]+)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
-
-      const lastUpdatedSpan = $item.find('.post-on .font-meta, .post-on').first();
-      const lastUpdated = lastUpdatedSpan.text().trim();
-
-      const ratingSpan = $item.find('.meta-item.rating .score').first();
-      const ratingText = ratingSpan.text().trim();
-      const rating = ratingText ? parseFloat(ratingText) : undefined;
-
-      results.push({
-        id,
-        title,
-        url,
-        coverImage: coverImage?.startsWith('http') ? coverImage : coverImage ? `https://stonescape.xyz${coverImage}` : undefined,
-        latestChapter,
-        lastUpdated,
-        rating,
-      });
+      return {
+        id: series.slug,
+        title: series.title,
+        url: `${this.getBaseUrl()}/series/${series.slug}`,
+        coverImage: cover ? (cover.startsWith('http') ? cover : `${this.getBaseUrl()}${cover}`) : undefined,
+        latestChapter: Number.isFinite(latestChapter) ? latestChapter : 0,
+        lastUpdated: updated || '',
+        lastUpdatedTimestamp: Number.isFinite(timestamp) ? timestamp : undefined,
+      };
     });
-
-    return results;
   }
 }
