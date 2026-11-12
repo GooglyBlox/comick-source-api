@@ -93,6 +93,7 @@ import { SanaScansScraper } from "./sanascans";
 import { KeroScansScraper } from "./keroscans";
 import { RoliaScanScraper } from "./roliascan";
 import { RinkoComicsScraper } from "./rinkocomics";
+import { LuminareScraper } from "./luminare";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -190,6 +191,7 @@ const scrapers: BaseScraper[] = [
   new KeroScansScraper(),
   new RoliaScanScraper(),
   new RinkoComicsScraper(),
+  new LuminareScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -321,4 +323,5 @@ export {
   KeroScansScraper,
   RoliaScanScraper,
   RinkoComicsScraper,
+  LuminareScraper,
 };
