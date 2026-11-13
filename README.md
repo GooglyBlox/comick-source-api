@@ -84,6 +84,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Weebdex            | `weebdex`            | https://weebdex.org         | Shutdown |
 | WitchScans         | `witchscans`         | https://witchscans.com      | Shutdown |
 | Writers' Scans     | `writers'-scans`     | https://writerscans.com     | Active   |
+| XComic             | `xcomic`             | https://xcomic.me           | Active   |
 | Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
 | Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Shutdown |
 
