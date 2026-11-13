@@ -31,8 +31,34 @@ export class NovelCoolScraper extends BaseScraper {
     return { title, id };
   }
 
+  private async fetchPage(url: string): Promise<string> {
+    for (let i = 0; i <= this.config.retryAttempts; i++) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "User-Agent": "curl/8.4.0",
+            Accept: "text/html,*/*;q=0.8",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.text();
+      } catch (error) {
+        if (i === this.config.retryAttempts) {
+          throw error;
+        }
+        await this.delay(this.config.downloadDelay * (i + 1));
+      }
+    }
+
+    throw new Error("Max retries exceeded");
+  }
+
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const html = await this.fetchWithRetry(mangaUrl);
+    const html = await this.fetchPage(mangaUrl);
     const $ = cheerio.load(html);
     const chapters: ScrapedChapter[] = [];
     const seenChapterNumbers = new Set<number>();
@@ -41,43 +67,51 @@ export class NovelCoolScraper extends BaseScraper {
       const $link = $(element);
       const href = $link.attr("href");
 
-      if (href) {
-        const fullUrl = href.startsWith("http")
-          ? href
-          : `https://www.novelcool.com${href}`;
-        const chapterNumber = this.extractChapterNumber(fullUrl);
+      if (!href) return;
 
-        const chapterTitle = $link
-          .find("span.chapter-item-headtitle")
-          .text()
-          .trim();
+      const fullUrl = href.startsWith("http")
+        ? href
+        : `https://www.novelcool.com${href}`;
 
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: chapterTitle || undefined,
-            url: fullUrl,
-          });
-        }
+      if (!/^https?:\/\/(?:www\.)?novelcool\.com\/chapter\//i.test(fullUrl)) {
+        return;
+      }
+
+      const chapterTitle = $link
+        .find("span.chapter-item-headtitle")
+        .text()
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const chapterNumber = this.parseChapterNumber(chapterTitle, fullUrl);
+
+      if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
+        seenChapterNumbers.add(chapterNumber);
+        chapters.push({
+          id: `${chapterNumber}`,
+          number: chapterNumber,
+          title: chapterTitle || undefined,
+          url: fullUrl,
+        });
       }
     });
 
     return chapters.sort((a, b) => a.number - b.number);
   }
 
-  protected extractChapterNumber(chapterUrl: string): number {
-    const patterns = [
-      /\/Chapter[/-](\d+(?:\.\d+)?)\//i,
-      /\/chapter\/Chapter[/-](\d+(?:\.\d+)?)\//i,
-    ];
+  private parseChapterNumber(title: string, chapterUrl: string): number {
+    const titleMatch =
+      title.match(/\bC(?:h(?:apter)?)?\.?\s*(\d+(?:\.\d+)?)/i) ||
+      title.match(/^(\d+(?:\.\d+)?)$/);
+    if (titleMatch) {
+      return parseFloat(titleMatch[1]);
+    }
 
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        return parseFloat(match[1]);
-      }
+    const urlMatch = chapterUrl.match(
+      /\/chapter\/[^/]*?(?:Ch(?:apter)?)[-.](\d+(?:[-.]\d+)?)(?:[-/]|$)/i,
+    );
+    if (urlMatch) {
+      return parseFloat(urlMatch[1].replace("-", "."));
     }
 
     return -1;
@@ -85,13 +119,13 @@ export class NovelCoolScraper extends BaseScraper {
 
   async search(query: string): Promise<SearchResult[]> {
     const searchUrl = `https://www.novelcool.com/search?name=${encodeURIComponent(query)}`;
-    const html = await this.fetchWithRetry(searchUrl);
+    const html = await this.fetchPage(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
 
     const searchPromises: Promise<SearchResult | null>[] = [];
 
-    $("div.book-item").each((_, element) => {
+    $("div.book-item").each((index, element) => {
       const $item = $(element);
 
       const link = $item.find('a[href*="/novel/"]').first();
@@ -150,6 +184,17 @@ export class NovelCoolScraper extends BaseScraper {
 
       const promise = (async () => {
         let latestChapter = 0;
+        if (index >= 5) {
+          return {
+            id,
+            title,
+            url: fullUrl,
+            coverImage,
+            rating,
+            lastUpdated,
+            latestChapter,
+          };
+        }
         try {
           const chapters = await this.getChapterList(fullUrl);
           if (chapters.length > 0) {
