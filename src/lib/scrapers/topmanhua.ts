@@ -1,7 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult } from "@/types";
+
+interface SuggestItem {
+  id: string;
+  title: string;
+  path: string;
+  thumbnail?: string;
+}
+
+interface ReaderChapter {
+  id: string;
+  slug: string;
+  title: string;
+  date?: string;
+  path: string;
+}
+
+interface ReaderChapters {
+  items: ReaderChapter[];
+  page: number;
+  hasMore: boolean;
+  total: number;
+}
 
 export class TopManhuaScraper extends BaseScraper {
   getName(): string {
@@ -16,181 +37,139 @@ export class TopManhuaScraper extends BaseScraper {
     return url.includes("manhuatop.org");
   }
 
+  private async fetchJson<T>(url: string): Promise<T> {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": this.config.userAgent,
+        Accept: "application/json",
+        Referer: `${this.getBaseUrl()}/`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private getSlug(url: string): string | null {
+    const match = url.match(/\/manhua\/([^/?#]+)/);
+    return match ? match[1] : null;
+  }
+
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
     const html = await this.fetchWithRetry(url);
     const $ = cheerio.load(html);
 
     const title =
-      $(".post-title h1").first().text().trim() ||
       $("h1").first().text().trim() ||
       $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/manhua\/([^/]+)/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
+    return { title, id: this.getSlug(url) || Date.now().toString() };
+  }
 
-    return { title, id };
+  private async fetchChapterPage(
+    slug: string,
+    page: number,
+  ): Promise<ReaderChapters> {
+    const path = `/manhua/${slug}/?tab=chapters${page > 1 ? `&chapter_page=${page}` : ""}`;
+    return this.fetchJson<ReaderChapters>(
+      `${this.getBaseUrl()}/api/reader?resource=chapters&path=${encodeURIComponent(path)}`,
+    );
+  }
+
+  private parseChapterNumber(chapter: ReaderChapter): number {
+    const match =
+      chapter.slug.match(/chapter-(\d+)(?:-(\d+))?/i) ||
+      chapter.title.match(/chapter\s+(\d+)(?:\.(\d+))?/i);
+    if (!match) return -1;
+    return match[2] ? parseFloat(`${match[1]}.${match[2]}`) : parseInt(match[1], 10);
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
-    const chapters: ScrapedChapter[] = [];
-    const seenChapterNumbers = new Set<number>();
+    const slug = this.getSlug(mangaUrl);
+    if (!slug) return [];
 
-    const ajaxUrl = `${mangaUrl.replace(/\/$/, "")}/ajax/chapters/`;
+    const chapters: ScrapedChapter[] = [];
+    const seen = new Set<number>();
 
     try {
-      const response = await fetch(ajaxUrl, {
-        method: "POST",
-        headers: {
-          "User-Agent": this.config.userAgent,
-          "X-Requested-With": "XMLHttpRequest",
-          Referer: mangaUrl,
-        },
-      });
+      const first = await this.fetchChapterPage(slug, 1);
+      const pages: ReaderChapters[] = [first];
 
-      let html: string;
-      if (response.ok) {
-        html = await response.text();
-      } else {
-        console.log("[TopManhua] AJAX failed, falling back to regular page");
-        html = await this.fetchWithRetry(mangaUrl);
+      if (first.hasMore && first.items.length > 0) {
+        const totalPages = Math.ceil(first.total / first.items.length);
+        const batchSize = 10;
+        for (let start = 2; start <= totalPages; start += batchSize) {
+          const batch: Promise<ReaderChapters>[] = [];
+          for (let p = start; p < start + batchSize && p <= totalPages; p++) {
+            batch.push(this.fetchChapterPage(slug, p));
+          }
+          pages.push(...(await Promise.all(batch)));
+        }
       }
 
-      const $ = cheerio.load(html);
-
-      $(".wp-manga-chapter").each((_: number, element: any) => {
-        const $chapter = $(element);
-        const $link = $chapter.find("a").first();
-        const href = $link.attr("href");
-        const chapterText = $link.text().trim();
-
-        if (href) {
-          const fullUrl = href.startsWith("http")
-            ? href
-            : `https://manhuatop.org${href}`;
-          const chapterNumber = this.extractChapterNumber(fullUrl);
-
-          if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-            seenChapterNumbers.add(chapterNumber);
-            chapters.push({
-              id: `${chapterNumber}`,
-              number: chapterNumber,
-              title: chapterText,
-              url: fullUrl,
-            });
-          }
+      for (const page of pages) {
+        for (const item of page.items) {
+          const number = this.parseChapterNumber(item);
+          if (number < 0 || seen.has(number)) continue;
+          seen.add(number);
+          chapters.push({
+            id: `${number}`,
+            number,
+            title: item.title,
+            url: new URL(item.path, this.getBaseUrl()).toString(),
+            lastUpdated: item.date,
+          });
         }
-      });
+      }
     } catch (error) {
       console.error("[TopManhua] Chapter fetch error:", error);
-      try {
-        const html = await this.fetchWithRetry(mangaUrl);
-        const $ = cheerio.load(html);
-
-        $(".wp-manga-chapter").each((_: number, element: any) => {
-          const $chapter = $(element);
-          const $link = $chapter.find("a").first();
-          const href = $link.attr("href");
-          const chapterText = $link.text().trim();
-
-          if (href) {
-            const fullUrl = href.startsWith("http")
-              ? href
-              : `https://manhuatop.org${href}`;
-            const chapterNumber = this.extractChapterNumber(fullUrl);
-
-            if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-              seenChapterNumbers.add(chapterNumber);
-              chapters.push({
-                id: `${chapterNumber}`,
-                number: chapterNumber,
-                title: chapterText,
-                url: fullUrl,
-              });
-            }
-          }
-        });
-      } catch (fallbackError) {
-        console.error("[TopManhua] Fallback chapter fetch error:", fallbackError);
-      }
     }
 
     return chapters.sort((a, b) => a.number - b.number);
   }
 
-  protected extractChapterNumber(chapterUrl: string): number {
-    const patterns = [
-      /\/chapter[/-](\d+)(?:[.-](\d+))?/i,
-      /chapter[/-](\d+)(?:[.-](\d+))?$/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = chapterUrl.match(pattern);
-      if (match) {
-        const mainNumber = parseInt(match[1], 10);
-        const decimalPart = match[2] ? parseInt(match[2], 10) : 0;
-
-        if (decimalPart > 0) {
-          return mainNumber + decimalPart / 10;
-        }
-        return mainNumber;
-      }
-    }
-
-    return -1;
-  }
-
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `https://manhuatop.org/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
-    const results: SearchResult[] = [];
+    const data = await this.fetchJson<{ items: SuggestItem[] }>(
+      `${this.getBaseUrl()}/api/search/suggest?q=${encodeURIComponent(query)}`,
+    );
 
-    $(".row.c-tabs-item__content").each((_, element) => {
-      const $item = $(element);
+    const items = (data.items || []).slice(0, 5);
 
-      const titleLink = $item.find(".post-title h2 a, .post-title a").first();
-      const url = titleLink.attr("href");
-      const title = titleLink.text().trim();
+    return Promise.all(
+      items.map(async (item) => {
+        const slug = this.getSlug(item.path) || "";
+        let latestChapter = 0;
+        let lastUpdated = "";
+        let lastUpdatedTimestamp: number | undefined;
 
-      if (!url) return;
+        try {
+          const page = await this.fetchChapterPage(slug, 1);
+          const numbers = page.items
+            .map((chapter) => this.parseChapterNumber(chapter))
+            .filter((n) => n >= 0);
+          if (numbers.length > 0) latestChapter = Math.max(...numbers);
+          const date = page.items[0]?.date;
+          if (date) {
+            lastUpdated = date;
+            lastUpdatedTimestamp = new Date(date).getTime();
+          }
+        } catch (error) {
+          console.error("[TopManhua] Latest chapter fetch error:", error);
+        }
 
-      const slugMatch = url.match(/\/manhua\/([^/]+)/);
-      const id = slugMatch ? slugMatch[1] : "";
-
-      const coverImg = $item.find(".tab-thumb img").first();
-      const coverImage = coverImg.attr("data-src") || coverImg.attr("src");
-
-      const latestChapterLink = $item
-        .find(".latest-chap .chapter a, .latest-chap a")
-        .first();
-      const latestChapterText = latestChapterLink.text().trim();
-      const chapterMatch = latestChapterText.match(/Chapter\s+([\d.]+)/i);
-      const latestChapter = chapterMatch ? parseFloat(chapterMatch[1]) : 0;
-
-      const lastUpdatedSpan = $item
-        .find(".chapter-release-date, .post-on .font-meta, .post-on")
-        .first();
-      const lastUpdated = lastUpdatedSpan.text().trim();
-
-      const ratingSpan = $item.find(".meta-item.rating .total_votes").first();
-      const ratingText = ratingSpan.text().trim();
-      const rating = ratingText ? parseFloat(ratingText) : undefined;
-
-      results.push({
-        id,
-        title,
-        url,
-        coverImage: coverImage?.startsWith("http")
-          ? coverImage
-          : coverImage
-            ? `https://manhuatop.org${coverImage}`
-            : undefined,
-        latestChapter,
-        lastUpdated,
-        rating,
-      });
-    });
-
-    return results;
+        return {
+          id: slug,
+          title: item.title,
+          url: new URL(item.path, this.getBaseUrl()).toString(),
+          coverImage: item.thumbnail,
+          latestChapter,
+          lastUpdated,
+          lastUpdatedTimestamp,
+        };
+      }),
+    );
   }
 }
