@@ -80,6 +80,7 @@ import { BaeToonScraper } from "./baetoon";
 import { NyxScansScraper } from "./nyxscans";
 import { MangaKScraper } from "./mangak";
 import { XComicScraper } from "./xcomic";
+import { ReiMangaScraper } from "./reimanga";
 import { SourceInfo } from "@/types";
 
 const scrapers: BaseScraper[] = [
@@ -164,6 +165,7 @@ const scrapers: BaseScraper[] = [
   new NyxScansScraper(),
   new MangaKScraper(),
   new XComicScraper(),
+  new ReiMangaScraper(),
 ];
 
 export function getScraper(url: string): BaseScraper | null {
@@ -282,4 +284,5 @@ export {
   NyxScansScraper,
   MangaKScraper,
   XComicScraper,
+  ReiMangaScraper,
 };
