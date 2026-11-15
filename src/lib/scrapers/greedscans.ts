@@ -4,7 +4,7 @@ import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
 export class GreedScansScraper extends BaseScraper {
-  private readonly BASE_URL = "https://greedscans.com";
+  private readonly BASE_URL = "https://greedscans.org";
 
   getName(): string {
     return "Greed Scans";
@@ -15,7 +15,7 @@ export class GreedScansScraper extends BaseScraper {
   }
 
   canHandle(url: string): boolean {
-    return url.includes("greedscans.com");
+    return url.includes("greedscans.org") || url.includes("greedscans.com");
   }
 
   getType(): SourceType {
