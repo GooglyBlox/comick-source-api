@@ -84,7 +84,12 @@ export class FlameComicsScraper extends BaseScraper {
   async search(query: string): Promise<SearchResult[]> {
     try {
       // Fetch the series list from the API
-      const response = await fetch(this.API_URL);
+      const response = await fetch(this.API_URL, {
+        headers: {
+          "User-Agent": this.config.userAgent,
+          Accept: "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
       }
