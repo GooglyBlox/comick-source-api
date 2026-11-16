@@ -1,35 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as cheerio from "cheerio";
 import { BaseScraper } from "./base";
 import { ScrapedChapter, SearchResult, SourceType } from "@/types";
 
-interface VortexChapter {
-  id: number;
+interface VortexScansChapter {
   number: number;
-  title: string;
   slug: string;
-  isLocked: boolean;
-  isAccessible: boolean;
+  title?: string;
+  createdAt?: string;
+  isLocked?: boolean;
+  isAccessible?: boolean;
 }
 
-interface VortexPost {
+interface VortexScansPost {
   id: number;
   slug: string;
   postTitle: string;
-  featuredImage: string;
-  averageRating: number;
-  updatedAt: string;
-  chapters: VortexChapter[];
-}
-
-interface VortexSearchResponse {
-  posts: VortexPost[];
-  totalCount: number;
+  seriesType?: string;
+  featuredImage?: string;
+  averageRating?: number;
+  chapters?: VortexScansChapter[];
 }
 
 export class VortexScansScraper extends BaseScraper {
   private readonly BASE_URL = "https://vortexscans.org";
   private readonly API_URL = "https://api.vortexscans.org";
+  private readonly PAGE_SIZE = 200;
 
   getName(): string {
     return "Vortex Scans";
@@ -47,62 +42,100 @@ export class VortexScansScraper extends BaseScraper {
     return url.includes("vortexscans.org");
   }
 
+  private async fetchJson<T>(url: string): Promise<T> {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": this.config.userAgent,
+        Accept: "application/json",
+        Referer: `${this.BASE_URL}/`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return (await response.json()) as T;
+  }
+
+  private slugFromUrl(url: string): string {
+    const match = url.match(/\/series\/([^/?#]+)/);
+    return match ? decodeURIComponent(match[1]) : "";
+  }
+
   async extractMangaInfo(url: string): Promise<{ title: string; id: string }> {
+    const slug = this.slugFromUrl(url);
+
+    if (slug) {
+      try {
+        const data = await this.fetchJson<{ post?: VortexScansPost }>(
+          `${this.API_URL}/api/post?postSlug=${encodeURIComponent(slug)}`,
+        );
+        if (data.post?.postTitle) {
+          return { title: data.post.postTitle, id: slug };
+        }
+      } catch (error) {
+        console.error("[Vortex Scans] Post fetch error:", error);
+      }
+    }
+
     const html = await this.fetchWithRetry(url);
     const $ = cheerio.load(html);
-
     const title =
-      $("h1").first().text().trim() ||
-      $("title").text().split(" - ")[0].trim();
+      $("h1").first().text().trim() || $("title").text().split(" - ")[0].trim();
 
-    const urlMatch = url.match(/\/series\/([^/]+)/);
-    const id = urlMatch ? urlMatch[1] : Date.now().toString();
-
-    return { title, id };
+    return { title, id: slug || Date.now().toString() };
   }
 
   async getChapterList(mangaUrl: string): Promise<ScrapedChapter[]> {
+    const slug = this.slugFromUrl(mangaUrl);
+    if (!slug) return [];
+
     const chapters: ScrapedChapter[] = [];
     const seenChapterNumbers = new Set<number>();
 
     try {
-      const html = await this.fetchWithRetry(mangaUrl);
-      const $ = cheerio.load(html);
+      const postData = await this.fetchJson<{
+        post?: { id: number };
+        totalChapterCount?: number;
+      }>(`${this.API_URL}/api/post?postSlug=${encodeURIComponent(slug)}`);
 
-      const slugMatch = mangaUrl.match(/\/series\/([^/]+)/);
-      const slug = slugMatch ? slugMatch[1] : "";
+      const postId = postData.post?.id;
+      if (!postId) return [];
 
-      $("div.mt-4 img[alt^='Chapter']").each((_: number, element: any) => {
-        const $img = $(element);
-        const altText = $img.attr("alt") || "";
+      const total = postData.totalChapterCount ?? 0;
 
-        const chapterMatch = altText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-        if (!chapterMatch) return;
+      for (let skip = 0; skip < Math.max(total, 1); skip += this.PAGE_SIZE) {
+        const data = await this.fetchJson<{
+          post?: { chapters?: VortexScansChapter[] };
+        }>(
+          `${this.API_URL}/api/chapters?postId=${postId}&skip=${skip}&take=${this.PAGE_SIZE}&order=asc`,
+        );
 
-        const chapterNumber = parseFloat(chapterMatch[1]);
+        const page = data.post?.chapters ?? [];
 
-        const $container = $img.closest("div.relative");
-        const hasLockIcon =
-          $container.find("div.bg-black\\/50 svg, div[class*='bg-black/50'] svg")
-            .length > 0;
+        for (const chapter of page) {
+          if (chapter.isLocked || chapter.isAccessible === false) continue;
+          if (
+            typeof chapter.number !== "number" ||
+            chapter.number < 0 ||
+            seenChapterNumbers.has(chapter.number)
+          ) {
+            continue;
+          }
 
-        if (hasLockIcon) {
-          return;
-        }
-
-        if (chapterNumber >= 0 && !seenChapterNumbers.has(chapterNumber)) {
-          seenChapterNumbers.add(chapterNumber);
-
-          const fullUrl = `${this.BASE_URL}/series/${slug}/chapter-${chapterNumber}`;
-
+          seenChapterNumbers.add(chapter.number);
           chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: `Chapter ${chapterNumber}`,
-            url: fullUrl,
+            id: `${chapter.number}`,
+            number: chapter.number,
+            title: chapter.title || `Chapter ${chapter.number}`,
+            url: `${this.BASE_URL}/series/${slug}/${chapter.slug}`,
+            lastUpdated: chapter.createdAt,
           });
         }
-      });
+
+        if (page.length < this.PAGE_SIZE) break;
+      }
     } catch (error) {
       console.error("[Vortex Scans] Chapter fetch error:", error);
       throw error;
@@ -112,51 +145,39 @@ export class VortexScansScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.API_URL}/api/query?page=1&perPage=5&searchTerm=${encodeURIComponent(query)}`;
+    const data = await this.fetchJson<{ posts?: VortexScansPost[] }>(
+      `${this.API_URL}/api/query?page=1&perPage=20&searchTerm=${encodeURIComponent(query)}`,
+    );
 
-    const response = await fetch(searchUrl, {
-      headers: {
-        "User-Agent": this.config.userAgent,
-        Accept: "application/json",
-      },
-    });
+    return (data.posts ?? [])
+      .filter((post) => post.seriesType !== "NOVEL")
+      .slice(0, 20)
+      .map((post) => {
+        let latestChapter = 0;
+        let latestDate: string | undefined;
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data: VortexSearchResponse = await response.json();
-
-    return data.posts.map((post) => {
-      let latestChapter = 0;
-      for (const chapter of post.chapters) {
-        if (!chapter.isLocked && chapter.isAccessible) {
+        for (const chapter of post.chapters ?? []) {
+          if (chapter.isLocked || chapter.isAccessible === false) continue;
           if (chapter.number > latestChapter) {
             latestChapter = chapter.number;
+            latestDate = chapter.createdAt;
           }
         }
-      }
 
-      let lastUpdatedTimestamp: number | undefined;
-      if (post.updatedAt) {
-        const parsedDate = new Date(post.updatedAt);
-        if (!isNaN(parsedDate.getTime())) {
-          lastUpdatedTimestamp = parsedDate.getTime();
-        }
-      }
+        const parsed = latestDate ? new Date(latestDate).getTime() : NaN;
 
-      return {
-        id: post.slug,
-        title: post.postTitle,
-        url: `${this.BASE_URL}/series/${post.slug}`,
-        coverImage: post.featuredImage,
-        latestChapter,
-        lastUpdated: post.updatedAt
-          ? new Date(post.updatedAt).toLocaleDateString()
-          : "",
-        lastUpdatedTimestamp,
-        rating: post.averageRating,
-      };
-    });
+        return {
+          id: post.slug,
+          title: post.postTitle.trim(),
+          url: `${this.BASE_URL}/series/${post.slug}`,
+          coverImage: post.featuredImage || undefined,
+          latestChapter,
+          lastUpdated: latestDate
+            ? new Date(latestDate).toLocaleDateString()
+            : "",
+          lastUpdatedTimestamp: isNaN(parsed) ? undefined : parsed,
+          rating: post.averageRating,
+        };
+      });
   }
 }
