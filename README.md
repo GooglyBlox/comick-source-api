@@ -16,6 +16,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Bato               | `bato`               | https://bato.to             | Shutdown |
 | Chikari            | `chikari`            | https://chikari.moe         | Active   |
 | Comix              | `comix`              | https://comix.to            | Unstable |
+| Danke fürs Lesen   | `danke-furs-lesen`   | https://danke.moe           | Active   |
 | DemonicScans       | `demonicscans`       | https://demonicscans.org    | Active   |
 | Diva Scans         | `diva-scans`         | https://divascans.org       | Unstable |
 | Dynasty Reader     | `dynasty-reader`     | https://dynasty-scans.com   | Active   |
