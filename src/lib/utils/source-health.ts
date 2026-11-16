@@ -9,6 +9,7 @@ export enum SourceStatus {
 
 const HEALTH_CHECK_TIMEOUT_MS = 15000;
 const ALL_SOURCES_TIMEOUT_MS = 20000;
+const HEALTH_CHECK_QUERIES = ["the", "a"];
 
 export interface SourceHealthResult {
   status: SourceStatus;
@@ -60,19 +61,28 @@ export function detectCloudflare(html: string, headers?: Headers): boolean {
  */
 export async function checkSourceHealth(
   scraper: BaseScraper,
-  testQuery: string = "test",
+  testQueries: string | string[] = HEALTH_CHECK_QUERIES,
 ): Promise<SourceHealthResult> {
   const startTime = Date.now();
   const lastChecked = new Date().toISOString();
+  const queries = Array.isArray(testQueries) ? testQueries : [testQueries];
 
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<{ timedOut: true }>((resolve) => {
-    setTimeout(() => resolve({ timedOut: true }), HEALTH_CHECK_TIMEOUT_MS);
+    timeoutId = setTimeout(
+      () => resolve({ timedOut: true }),
+      HEALTH_CHECK_TIMEOUT_MS,
+    );
   });
 
-  const searchPromise = scraper.search(testQuery).then((results) => ({
-    timedOut: false as const,
-    results,
-  }));
+  const searchPromise = (async () => {
+    let results: unknown = [];
+    for (const query of queries) {
+      results = await scraper.search(query);
+      if (!Array.isArray(results) || results.length > 0) break;
+    }
+    return { timedOut: false as const, results };
+  })();
 
   try {
     const result = await Promise.race([searchPromise, timeoutPromise]);
@@ -82,6 +92,15 @@ export async function checkSourceHealth(
       return {
         status: SourceStatus.TIMEOUT,
         message: `Source took longer than ${HEALTH_CHECK_TIMEOUT_MS / 1000}s to respond`,
+        responseTime,
+        lastChecked,
+      };
+    }
+
+    if (Array.isArray(result.results) && result.results.length === 0) {
+      return {
+        status: SourceStatus.ERROR,
+        message: `Search returned no results for ${queries.map((q) => `"${q}"`).join(" or ")}`,
         responseTime,
         lastChecked,
       };
@@ -165,6 +184,8 @@ export async function checkSourceHealth(
       responseTime,
       lastChecked,
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -175,8 +196,7 @@ export async function checkAllSourcesHealth(
   scrapers: BaseScraper[],
 ): Promise<Map<string, SourceHealthResult>> {
   const results = new Map<string, SourceHealthResult>();
-  const getSourceName = (scraper: BaseScraper) =>
-    scraper.getName().toLowerCase().replace(/\s+/g, "-");
+  const getSourceName = (scraper: BaseScraper) => scraper.getId();
 
   let deadlineId: ReturnType<typeof setTimeout> | undefined;
   const deadline = new Promise<void>((resolve) => {
