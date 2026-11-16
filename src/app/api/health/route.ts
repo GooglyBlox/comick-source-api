@@ -6,7 +6,8 @@ import {
   SourceHealthResult,
 } from "@/lib/utils/source-health";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
+export const maxDuration = 120;
 
 // Cache health results for 5 minutes to avoid hammering sources
 let cachedResults: {
@@ -14,6 +15,16 @@ let cachedResults: {
   timestamp: number;
 } | null = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+let inflight: Promise<Record<string, SourceHealthResult>> | null = null;
+
+async function runHealthCheck(): Promise<Record<string, SourceHealthResult>> {
+  const scrapers = getAllScrapers().filter(
+    (scraper) => !SHUTDOWN_SOURCE_IDS.has(scraper.getId()),
+  );
+  const healthMap = await checkAllSourcesHealth(scrapers);
+  return Object.fromEntries(healthMap);
+}
 
 export async function GET() {
   try {
@@ -28,23 +39,16 @@ export async function GET() {
       });
     }
 
-    // Check health of all active sources
-    const scrapers = getAllScrapers().filter(
-      (scraper) =>
-        !SHUTDOWN_SOURCE_IDS.has(scraper.getId()),
-    );
-    const healthMap = await checkAllSourcesHealth(scrapers);
+    if (!inflight) {
+      inflight = runHealthCheck().finally(() => {
+        inflight = null;
+      });
+    }
+    const healthResults = await inflight;
 
-    // Convert Map to object for JSON serialization
-    const healthResults: Record<string, SourceHealthResult> = {};
-    healthMap.forEach((health, sourceName) => {
-      healthResults[sourceName] = health;
-    });
-
-    // Update cache
     cachedResults = {
       data: healthResults,
-      timestamp: now,
+      timestamp: Date.now(),
     };
 
     return NextResponse.json({

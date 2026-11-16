@@ -8,7 +8,8 @@ export enum SourceStatus {
 }
 
 const HEALTH_CHECK_TIMEOUT_MS = 15000;
-const ALL_SOURCES_TIMEOUT_MS = 20000;
+const ALL_SOURCES_TIMEOUT_MS = 100000;
+const HEALTH_CHECK_CONCURRENCY = 10;
 const HEALTH_CHECK_QUERIES = ["the", "a"];
 
 export interface SourceHealthResult {
@@ -203,16 +204,22 @@ export async function checkAllSourcesHealth(
     deadlineId = setTimeout(resolve, ALL_SOURCES_TIMEOUT_MS);
   });
   const lastChecked = new Date().toISOString();
+  const queue = [...scrapers];
+  let stopped = false;
+
+  const worker = async () => {
+    while (!stopped) {
+      const scraper = queue.shift();
+      if (!scraper) return;
+      results.set(getSourceName(scraper), await checkSourceHealth(scraper));
+    }
+  };
 
   await Promise.race([
-    Promise.all(
-      scrapers.map(async (scraper) => {
-        const health = await checkSourceHealth(scraper);
-        results.set(getSourceName(scraper), health);
-      }),
-    ),
+    Promise.all(Array.from({ length: HEALTH_CHECK_CONCURRENCY }, worker)),
     deadline,
   ]);
+  stopped = true;
   clearTimeout(deadlineId);
 
   const finalResults = new Map(results);
