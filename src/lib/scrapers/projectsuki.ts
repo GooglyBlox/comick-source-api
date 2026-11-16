@@ -22,7 +22,7 @@ export class ProjectSukiScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.BASE_URL}/search?q=${encodeURIComponent(query)}`;
+    const searchUrl = `${this.BASE_URL}/search?q=${encodeURIComponent(query)}&adv=1`;
     const html = await this.fetchWithRetry(searchUrl);
     const $ = cheerio.load(html);
     const results: SearchResult[] = [];
@@ -94,8 +94,8 @@ export class ProjectSukiScraper extends BaseScraper {
     const $ = cheerio.load(html);
 
     const title =
-      $("h3").first().text().trim() ||
-      $("title").text().split(" - ")[0].trim();
+      $('h2[itemprop="title"]').first().text().trim() ||
+      $("title").text().split(" | ")[0].trim();
 
     const urlMatch = url.match(/\/book\/(\d+)/);
     const id = urlMatch ? urlMatch[1] : Date.now().toString();
@@ -131,7 +131,7 @@ export class ProjectSukiScraper extends BaseScraper {
         ? href
         : `${this.BASE_URL}${href}`;
 
-      const chapterText = $chapterLink.text().trim();
+      const chapterText = $chapterLink.text().replace(/\s+/g, " ").trim();
 
       const chapterMatch = chapterText.match(
         /(?:Chapter|Ch\.?)\s+(\d+(?:\.\d+)?)/i,
@@ -163,7 +163,14 @@ export class ProjectSukiScraper extends BaseScraper {
       });
     });
 
-    return chapters.sort((a, b) => a.number - b.number);
+    const unique = new Map<number, ScrapedChapter>();
+    for (const chapter of chapters) {
+      if (!unique.has(chapter.number)) {
+        unique.set(chapter.number, chapter);
+      }
+    }
+
+    return Array.from(unique.values()).sort((a, b) => a.number - b.number);
   }
 
   protected override extractChapterNumber(chapterUrl: string): number {
