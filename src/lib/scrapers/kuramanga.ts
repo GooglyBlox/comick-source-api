@@ -45,73 +45,27 @@ export class KuramangaScraper extends BaseScraper {
       const html = await this.fetchWithRetry(mangaUrl);
       const $ = cheerio.load(html);
 
-      const scripts = $("script");
-      let chaptersData: any[] = [];
-      let mangaSlug = "";
+      $(".chapter-item").each((_, element) => {
+        const link = $(element).find("a").first();
+        const href = link.attr("href");
+        if (!href) return;
 
-      scripts.each((_, element) => {
-        const scriptContent = $(element).html() || "";
+        const numberMatch = link.text().match(/(\d+(?:\.\d+)?)/);
+        if (!numberMatch) return;
 
-        const chaptersMatch = scriptContent.match(
-          /window\.CHAPTERS_ALL\s*=\s*(\[[\s\S]*?\]);/
-        );
-        if (chaptersMatch) {
-          try {
-            chaptersData = JSON.parse(chaptersMatch[1]);
-          } catch (error) {
-            console.error("[KuraManga] Failed to parse CHAPTERS_ALL:", error);
-          }
-        }
+        const chapterNumber = parseFloat(numberMatch[1]);
+        if (seenChapterNumbers.has(chapterNumber)) return;
+        seenChapterNumbers.add(chapterNumber);
 
-        const slugMatch = scriptContent.match(
-          /window\.CHAPTERS_SLUG\s*=\s*"([^"]+)"/
-        );
-        if (slugMatch) {
-          mangaSlug = slugMatch[1];
-        }
+        chapters.push({
+          id: `${chapterNumber}`,
+          number: chapterNumber,
+          title: `Chapter ${chapterNumber}`,
+          url: new URL(href, this.BASE_URL).toString(),
+          lastUpdated:
+            $(element).find("time").first().text().trim() || undefined,
+        });
       });
-
-      if (!mangaSlug) {
-        const urlMatch = mangaUrl.match(/kuramanga\.com\/([^/]+)/);
-        mangaSlug = urlMatch ? urlMatch[1] : "";
-      }
-
-      for (const chapter of chaptersData) {
-        const chapterNumber = chapter.chapter_number;
-        const chapterSlug = chapter.chapter_slug;
-        const createdAt = chapter.created_at;
-
-        if (
-          chapterNumber !== undefined &&
-          !seenChapterNumbers.has(chapterNumber)
-        ) {
-          seenChapterNumbers.add(chapterNumber);
-
-          const chapterUrl = `${this.BASE_URL}/${mangaSlug}/chapter-${chapterSlug}`;
-
-          let lastUpdated: string | undefined;
-          if (createdAt) {
-            try {
-              const date = new Date(createdAt);
-              lastUpdated = date.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              });
-            } catch {
-              lastUpdated = undefined;
-            }
-          }
-
-          chapters.push({
-            id: `${chapterNumber}`,
-            number: chapterNumber,
-            title: `Chapter ${chapterNumber}`,
-            url: chapterUrl,
-            lastUpdated,
-          });
-        }
-      }
     } catch (error) {
       console.error("[KuraManga] Chapter fetch error:", error);
       throw error;
@@ -183,7 +137,7 @@ export class KuramangaScraper extends BaseScraper {
         } catch (error) {
           console.error(
             `[KuraManga] Failed to fetch chapter list for ${item.title}:`,
-            error
+            error,
           );
           results.push({
             id: item.normalized_title || item.id.toString(),
