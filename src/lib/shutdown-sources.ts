@@ -1,6 +1,16 @@
 export const SHUTDOWN_SOURCE_IDS: ReadonlySet<string> = new Set([
+  "arven-comics",
   "bato",
   "falcon-scans",
+  "firescans",
+  "hades-scans",
+  "kaliscan",
+  "likemanga",
+  "mangaloom",
   "mangapark",
+  "mangayy",
+  "utoon",
   "weebdex",
+  "witchscans",
+  "yaksha-scans",
 ]);
