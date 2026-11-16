@@ -120,9 +120,7 @@ export async function POST(request: NextRequest) {
 
     const scraper = getScraperByName(source);
     if (!scraper) {
-      const availableSources = getAllScrapers().map((s) =>
-        s.getName().toLowerCase(),
-      );
+      const availableSources = getAllScrapers().map((s) => s.getId());
       return NextResponse.json(
         {
           error: `Unsupported source. Available sources: ${availableSources.join(", ")}`,

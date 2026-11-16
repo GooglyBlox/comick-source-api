@@ -31,9 +31,7 @@ export async function GET() {
     // Check health of all active sources
     const scrapers = getAllScrapers().filter(
       (scraper) =>
-        !SHUTDOWN_SOURCE_IDS.has(
-          scraper.getName().toLowerCase().replace(/\s+/g, "-"),
-        ),
+        !SHUTDOWN_SOURCE_IDS.has(scraper.getId()),
     );
     const healthMap = await checkAllSourcesHealth(scrapers);
 

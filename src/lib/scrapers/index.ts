@@ -147,9 +147,11 @@ export function getScraper(url: string): BaseScraper | null {
 }
 
 export function getScraperByName(name: string): BaseScraper | null {
+  const key = name.trim().toLowerCase();
   return (
     scrapers.find(
-      (scraper) => scraper.getName().toLowerCase() === name.toLowerCase(),
+      (scraper) =>
+        scraper.getId() === key || scraper.getName().toLowerCase() === key,
     ) || null
   );
 }
@@ -164,7 +166,7 @@ export function getClientOnlyScrapers(): BaseScraper[] {
 
 export function getAllSourceInfo(): SourceInfo[] {
   return scrapers.map((scraper) => ({
-    id: scraper.getName().toLowerCase().replace(/\s+/g, "-"),
+    id: scraper.getId(),
     name: scraper.getName(),
     baseUrl: scraper.getBaseUrl(),
     description: scraper.getDescription(),

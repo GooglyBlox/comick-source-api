@@ -75,6 +75,10 @@ export abstract class BaseScraper {
     return filename.replace(/[<>:"/\\|?*]/g, "_").trim();
   }
 
+  getId(): string {
+    return this.getName().toLowerCase().replace(/\s+/g, "-");
+  }
+
   getDescription(): string {
     return `${this.getName()} - ${this.getBaseUrl()}`;
   }
