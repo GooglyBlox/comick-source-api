@@ -142,8 +142,7 @@ export class RizzFablesScraper extends BaseScraper {
       });
     });
 
-    const results: SearchResult[] = [];
-    for (const series of matchedSeries) {
+    return Promise.all(matchedSeries.slice(0, 5).map(async (series): Promise<SearchResult> => {
       try {
         const seriesHtml = await this.fetchWithRetry(series.url);
         const $series = cheerio.load(seriesHtml);
@@ -167,7 +166,7 @@ export class RizzFablesScraper extends BaseScraper {
           }
         }
 
-        results.push({
+        return {
           id: series.id,
           title: series.title,
           url: series.url,
@@ -176,10 +175,10 @@ export class RizzFablesScraper extends BaseScraper {
           lastUpdated: lastUpdatedText,
           lastUpdatedTimestamp,
           rating: series.rating,
-        });
+        };
       } catch (error) {
         console.error(`[RizzFables] Failed to fetch chapter list for ${series.title}:`, error);
-        results.push({
+        return {
           id: series.id,
           title: series.title,
           url: series.url,
@@ -187,10 +186,8 @@ export class RizzFablesScraper extends BaseScraper {
           latestChapter: 0,
           lastUpdated: '',
           rating: series.rating,
-        });
+        };
       }
-    }
-
-    return results;
+    }));
   }
 }

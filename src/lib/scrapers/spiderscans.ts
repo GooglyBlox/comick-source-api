@@ -93,28 +93,24 @@ export class SpiderScansScraper extends BaseScraper {
   }
 
   async search(query: string): Promise<SearchResult[]> {
-    const searchUrl = `${this.BASE_URL}/?s=${encodeURIComponent(query)}&post_type=wp-manga`;
-    const html = await this.fetchWithRetry(searchUrl);
-    const $ = cheerio.load(html);
+    const searchUrl = `${this.BASE_URL}/wp-json/wp/v2/search?search=${encodeURIComponent(query)}&subtype=manga&per_page=10`;
+    const hits: Array<{ title?: string; url?: string }> = JSON.parse(
+      await this.fetchWithRetry(searchUrl),
+    );
 
     const matched: Array<{ id: string; title: string; url: string }> = [];
     const seenIds = new Set<string>();
 
-    $("article h2 a").each((_, element) => {
-      const $link = $(element);
-      const href = $link.attr("href") || "";
+    for (const hit of hits) {
+      const href = hit.url || "";
       const slugMatch = href.match(/\/manga\/([^/?#]+)\/?$/);
-      const title = $link.text().replace(/\s+/g, " ").trim();
+      const title = cheerio.load(hit.title || "").text().replace(/\s+/g, " ").trim();
 
-      if (!slugMatch || !title || seenIds.has(slugMatch[1])) return;
+      if (!slugMatch || !title || seenIds.has(slugMatch[1])) continue;
       seenIds.add(slugMatch[1]);
 
-      matched.push({
-        id: slugMatch[1],
-        title,
-        url: href.startsWith("http") ? href : `${this.BASE_URL}${href}`,
-      });
-    });
+      matched.push({ id: slugMatch[1], title, url: href });
+    }
 
     return Promise.all(
       matched.slice(0, 5).map(async (series): Promise<SearchResult> => {
