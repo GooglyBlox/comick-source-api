@@ -28,7 +28,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | KappaBeast         | `kappabeast`         | https://kappabeast.com      | Active   |
 | KDT Scans          | `kdt-scans`          | https://silentquill.net     | Unstable |
 | Kenscans           | `kenscans`           | https://kencomics.com       | Active   |
-| KS Group           | `ks-group-scans`     | https://ksgroupscans.com    | Active   |
+| KS Group           | `ks-group`           | https://ksgroupscans.com    | Active   |
 | KuraManga          | `kuramanga`          | https://kuramanga.com       | Active   |
 | LagoonScans        | `lagoonscans`        | https://lagoonscans.com     | Active   |
 | LHTranslation      | `lhtranslation`      | https://lhtranslation.net   | Active   |
@@ -72,7 +72,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | WeebCentral        | `weebcentral`        | https://weebcentral.com     | Active   |
 | Weebdex            | `weebdex`            | https://weebdex.org         | Shutdown |
 | WitchScans         | `witchscans`         | https://witchscans.com      | Unstable |
-| Writers' Scans     | `writers-scans`      | https://writerscans.com     | Active   |
+| Writers' Scans     | `writers'-scans`     | https://writerscans.com     | Active   |
 | Yaksha Comics      | `yaksha-comics`      | https://yakshacomics.com    | Active   |
 | Yaksha Scans       | `yaksha-scans`       | https://yakshascans.com     | Active   |
 
