@@ -37,7 +37,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Kayn Scans            | `kayn-scans`            | https://kaynscans.com            | Active   |
 | KDT Scans             | `kdt-scans`             | https://silentquill.net          | Unstable |
 | Kenscans              | `kenscans`              | https://kencomics.com            | Active   |
-| Kero Scans            | `kero-scans`            | https://keroscans.net            | Active   |
+| Kero Scans            | `kero-scans`            | https://keroscans.net            | Unstable |
 | KS Group              | `ks-group`              | https://ksgroupscans.com         | Active   |
 | KuraManga             | `kuramanga`             | https://kuramanga.com            | Active   |
 | LagoonScans           | `lagoonscans`           | https://lagoonscans.com          | Active   |
@@ -80,7 +80,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Rokari Comics         | `rokari-comics`         | https://rokaricomics.com         | Active   |
 | RoliaScan             | `roliascan`             | https://roliascan.com            | Active   |
 | Sana Scans            | `sana-scans`            | https://sanascans.com            | Active   |
-| Scythe Scans          | `scythe-scans`          | https://scythescans.com          | Active   |
+| Scythe Scans          | `scythe-scans`          | https://scythescans.com          | Unstable |
 | Siren Scans           | `siren-scans`           | https://sirenscans.com           | Active   |
 | Spider Scans          | `spider-scans`          | https://spiderscans.xyz          | Active   |
 | Stonescape            | `stonescape`            | https://stonescape.xyz           | Active   |
