@@ -29,7 +29,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Active   |
 | Genz Toons            | `genz-toons`            | https://genztoons.org            | Active   |
 | Greed Scans           | `greed-scans`           | https://greedscans.org           | Unstable |
-| Hachirumi             | `hachirumi`             | https://hachirumi.com            | Unstable |
+| Hachirumi             | `hachirumi`             | https://hachirumi.com            | Active   |
 | Hades Scans           | `hades-scans`           | https://hadesscans.com           | Shutdown |
 | Hive Toon             | `hive-toon`             | https://hivetoons.org            | Active   |
 | KaliScan              | `kaliscan`              | https://kaliscan.com             | Shutdown |
