@@ -80,7 +80,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Rokari Comics         | `rokari-comics`         | https://rokaricomics.com         | Active   |
 | RoliaScan             | `roliascan`             | https://roliascan.com            | Active   |
 | Sana Scans            | `sana-scans`            | https://sanascans.com            | Active   |
-| Scythe Scans          | `scythe-scans`          | https://scythescans.com          | Unstable |
+| Scythe Scans          | `scythe-scans`          | https://scythescans.com          | Active   |
 | Siren Scans           | `siren-scans`           | https://sirenscans.com           | Active   |
 | Spider Scans          | `spider-scans`          | https://spiderscans.xyz          | Active   |
 | Stonescape            | `stonescape`            | https://stonescape.xyz           | Active   |
