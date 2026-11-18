@@ -35,7 +35,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | KaliScan              | `kaliscan`              | https://kaliscan.com             | Shutdown |
 | KappaBeast            | `kappabeast`            | https://kappabeast.com           | Active   |
 | Kayn Scans            | `kayn-scans`            | https://kaynscans.com            | Active   |
-| KDT Scans             | `kdt-scans`             | https://silentquill.net          | Unstable |
+| KDT Scans             | `kdt-scans`             | https://silentquill.net          | Active   |
 | Kenscans              | `kenscans`              | https://kencomics.com            | Active   |
 | Kero Scans            | `kero-scans`            | https://keroscans.net            | Unstable |
 | KS Group              | `ks-group`              | https://ksgroupscans.com         | Active   |
@@ -62,7 +62,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Manhuaplus            | `manhuaplus`            | https://manhuaplus.top           | Active   |
 | ManhuaUS              | `manhuaus`              | https://manhuaus.club            | Active   |
 | Mgeko                 | `mgeko`                 | https://mgeko.cc                 | Active   |
-| Mist Scans            | `mist-scans`            | https://mistscans.com            | Active   |
+| Mist Scans            | `mist-scans`            | https://mistscans.com            | Unstable |
 | MKissa                | `mkissa`                | https://mkissa.to                | Active   |
 | NovelCool             | `novelcool`             | https://www.novelcool.com        | Active   |
 | Nyx Scans             | `nyx-scans`             | https://nyxscans.com             | Active   |
