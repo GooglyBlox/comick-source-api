@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans          | `falcon-scans`          | https://falconscans.com          | Shutdown |
 | Firescans             | `firescans`             | https://firescans.xyz            | Shutdown |
 | FlameComics           | `flamecomics`           | https://flamecomics.xyz          | Active   |
-| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Active   |
+| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Unstable |
 | Genz Toons            | `genz-toons`            | https://genztoons.org            | Active   |
 | Greed Scans           | `greed-scans`           | https://greedscans.org           | Unstable |
 | Hachirumi             | `hachirumi`             | https://hachirumi.com            | Active   |
@@ -84,7 +84,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Siren Scans           | `siren-scans`           | https://sirenscans.com           | Active   |
 | Spider Scans          | `spider-scans`          | https://spiderscans.xyz          | Active   |
 | Stonescape            | `stonescape`            | https://stonescape.xyz           | Active   |
-| Swarm                 | `swarm`                 | https://swarm.ws                 | Unstable |
+| Swarm                 | `swarm`                 | https://swarm.ws                 | Active   |
 | TCB Scans             | `tcb-scans`             | https://tcbonepiecechapters.com  | Active   |
 | Temple Scan           | `temple-scan`           | https://templetoons.com          | Unstable |
 | Thunderscans          | `thunderscans`          | https://en-thunderscans.com      | Active   |
