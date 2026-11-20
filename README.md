@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans          | `falcon-scans`          | https://falconscans.com          | Shutdown |
 | Firescans             | `firescans`             | https://firescans.xyz            | Shutdown |
 | FlameComics           | `flamecomics`           | https://flamecomics.xyz          | Active   |
-| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Unstable |
+| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Active   |
 | Genz Toons            | `genz-toons`            | https://genztoons.org            | Active   |
 | Greed Scans           | `greed-scans`           | https://greedscans.org           | Unstable |
 | Hachirumi             | `hachirumi`             | https://hachirumi.com            | Active   |
@@ -44,7 +44,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | LHTranslation         | `lhtranslation`         | https://lhtranslation.net        | Active   |
 | LikeManga             | `likemanga`             | https://likemanga.in             | Shutdown |
 | Lua Comic             | `lua-comic`             | https://luacomic.org             | Active   |
-| Luminare Translations | `luminare-translations` | https://luminaretranslations.com | Active   |
+| Luminare Translations | `luminare-translations` | https://luminaretranslations.com | Unstable |
 | Madarascans           | `madarascans`           | https://madarascans.net          | Active   |
 | Magus Manga           | `magus-manga`           | https://magustoon.org            | Active   |
 | Mangaball             | `mangaball`             | https://mangaball.com            | Unstable |
