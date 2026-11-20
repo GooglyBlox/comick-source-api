@@ -72,7 +72,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Qi Scans              | `qi-scans`              | https://qimanga.com              | Active   |
 | Rage Scans            | `rage-scans`            | https://ragescans.com            | Unstable |
 | Raven Scans           | `raven-scans`           | https://ravenscans.org           | Unstable |
-| RD Scans              | `rd-scans`              | https://rdscans.com              | Unstable |
+| RD Scans              | `rd-scans`              | https://rdscans.com              | Active   |
 | ReiManga              | `reimanga`              | https://reimanga.net             | Active   |
 | Rinko Comics          | `rinko-comics`          | https://rinkocomics.com          | Active   |
 | Ritharscans           | `ritharscans`           | https://ritharscans.com          | Active   |
@@ -84,7 +84,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Siren Scans           | `siren-scans`           | https://sirenscans.com           | Active   |
 | Spider Scans          | `spider-scans`          | https://spiderscans.xyz          | Active   |
 | Stonescape            | `stonescape`            | https://stonescape.xyz           | Active   |
-| Swarm                 | `swarm`                 | https://swarm.ws                 | Active   |
+| Swarm                 | `swarm`                 | https://swarm.ws                 | Unstable |
 | TCB Scans             | `tcb-scans`             | https://tcbonepiecechapters.com  | Active   |
 | Temple Scan           | `temple-scan`           | https://templetoons.com          | Unstable |
 | Thunderscans          | `thunderscans`          | https://en-thunderscans.com      | Active   |
