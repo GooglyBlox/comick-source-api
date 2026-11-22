@@ -44,7 +44,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | LHTranslation         | `lhtranslation`         | https://lhtranslation.net        | Active   |
 | LikeManga             | `likemanga`             | https://likemanga.in             | Shutdown |
 | Lua Comic             | `lua-comic`             | https://luacomic.org             | Active   |
-| Luminare Translations | `luminare-translations` | https://luminaretranslations.com | Unstable |
+| Luminare Translations | `luminare-translations` | https://luminaretranslations.com | Active   |
 | Madarascans           | `madarascans`           | https://madarascans.net          | Active   |
 | Magus Manga           | `magus-manga`           | https://magustoon.org            | Active   |
 | Mangaball             | `mangaball`             | https://mangaball.com            | Unstable |
