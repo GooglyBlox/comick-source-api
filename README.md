@@ -19,9 +19,9 @@ Next.js API for scraping manga metadata from multiple sources.
 | Danke fürs Lesen      | `danke-furs-lesen`      | https://danke.moe                | Active   |
 | DemonicScans          | `demonicscans`          | https://demonicscans.org         | Active   |
 | Diva Scans            | `diva-scans`            | https://divascans.org            | Active   |
-| Drake Scans           | `drake-scans`           | https://drakecomic.net           | Active   |
+| Drake Scans           | `drake-scans`           | https://drakecomic.net           | Unstable |
 | Dynasty Reader        | `dynasty-reader`        | https://dynasty-scans.com        | Active   |
-| Elf Toon              | `elf-toon`              | https://elftoon.net              | Active   |
+| Elf Toon              | `elf-toon`              | https://elftoon.net              | Unstable |
 | Eva Scans             | `eva-scans`             | https://evascans.net             | Active   |
 | Falcon Scans          | `falcon-scans`          | https://falconscans.com          | Shutdown |
 | Firescans             | `firescans`             | https://firescans.xyz            | Shutdown |
@@ -34,7 +34,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Hive Toon             | `hive-toon`             | https://hivetoons.org            | Active   |
 | KaliScan              | `kaliscan`              | https://kaliscan.com             | Shutdown |
 | KappaBeast            | `kappabeast`            | https://kappabeast.com           | Active   |
-| Kayn Scans            | `kayn-scans`            | https://kaynscans.com            | Active   |
+| Kayn Scans            | `kayn-scans`            | https://kaynscans.com            | Unstable |
 | KDT Scans             | `kdt-scans`             | https://silentquill.net          | Unstable |
 | Kenscans              | `kenscans`              | https://kencomics.com            | Active   |
 | Kero Scans            | `kero-scans`            | https://keroscans.net            | Unstable |
