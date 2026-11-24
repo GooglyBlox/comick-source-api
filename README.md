@@ -26,7 +26,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | Falcon Scans          | `falcon-scans`          | https://falconscans.com          | Shutdown |
 | Firescans             | `firescans`             | https://firescans.xyz            | Shutdown |
 | FlameComics           | `flamecomics`           | https://flamecomics.xyz          | Active   |
-| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Unstable |
+| Galaxy Degen Scans    | `galaxy-degen-scans`    | https://gdscans.com              | Active   |
 | Genz Toons            | `genz-toons`            | https://genztoons.org            | Active   |
 | Greed Scans           | `greed-scans`           | https://greedscans.org           | Unstable |
 | Hachirumi             | `hachirumi`             | https://hachirumi.com            | Active   |
@@ -35,7 +35,7 @@ Next.js API for scraping manga metadata from multiple sources.
 | KaliScan              | `kaliscan`              | https://kaliscan.com             | Shutdown |
 | KappaBeast            | `kappabeast`            | https://kappabeast.com           | Active   |
 | Kayn Scans            | `kayn-scans`            | https://kaynscans.com            | Active   |
-| KDT Scans             | `kdt-scans`             | https://silentquill.net          | Unstable |
+| KDT Scans             | `kdt-scans`             | https://silentquill.net          | Active   |
 | Kenscans              | `kenscans`              | https://kencomics.com            | Active   |
 | Kero Scans            | `kero-scans`            | https://keroscans.net            | Unstable |
 | KS Group              | `ks-group`              | https://ksgroupscans.com         | Active   |
